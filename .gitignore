@@ -9,3 +9,11 @@ env/bin/
 env/lib/python3.8/site-packages/
 
 *.cfg
+
+img/DefaultAvatar.jpg
+
+img/img_avatar.png
+
+*.jpg
+
+*.png

@@ -12,15 +12,20 @@
     {% else %}
     <table>
         <tr>
-            <th>Item</th>
-            <th>Date</th>
+            <th>Store</th>
+            <th>Items</th>
+            <th>Quantity </th>
+            <th>Price</th>
             <th>Actions</th>
         </tr>
         {% for task in tasks %}
             <tr>
                 <td>{{ task.content }}</td>
-                <td>{{ task.date_created.date() }}</td>
-                <td>
+                <td>{{ task.item }}</td>
+                <td>{{ task.desiredAmount }}</td>
+                <td>{{ task.pricePerUnit }}</td>
+<!--                 <td>{{ task.date_created.date() }}</td>
+ -->                <td>
                     <a href="/delete/{{task.id}}">Delete</a>
                     <br>
                     <a href="/update/{{task.id}}">Update</a>
@@ -28,12 +33,22 @@
             </tr>
         {% endfor %}
     </table>
+
     {% endif %}
 
     <div class="form">
 		<form actions="/" method="POST">
-			<input type="text" name="content" id="content">
-			<input type="submit" value="Add item">
+            <label for="Store">Store:</label><br>
+            <input type="text" id="content" name="content"><br>
+            <label for="Item">Item:</label><br>
+            <input type="text" id="item_info" name="item_info"><br>
+            <label for="Quantity">Quantity:</label><br>
+            <input type="text" id="quantity" name="quantity"><br>
+            <label for="Price">Price:</label><br>
+            <input type="text" id="price" name="price">
+            <br>
+			<input type="submit" value="Submit">
+            <br>
 		</form>
 	</div>
 </div> 

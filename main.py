@@ -1,3 +1,4 @@
+#FLASK_APP=main.py FLASK_ENV=development flask run --port 4045
 
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
@@ -9,30 +10,48 @@ db = SQLAlchemy(app)
 
 class Todo(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
-	content = db.Column(db.String(200), nullable=False)
-	completed = db.Column(db.Integer, default = 0)
+	content = db.Column(db.String(200))
+	item = db.Column(db.String(200))
+	desiredAmount = db.Column(db.String(200))
+	pricePerUnit = db.Column(db.String(200))
 	date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
 	def __repr__(self):
 		return '<Task %r>' % self.id
 
 @app.route('/', methods=['POST', 'GET']) 
-
 def index(): 
     if request.method == 'POST':
-        task_content = request.form['content']
-        new_task = Todo(content=task_content)
+        store_info = request.form['content']
+        item_info = request.form['item_info']
+        quantity_info = request.form['quantity']
+        price_info = request.form['price']
 
+        new_entry = Todo(content=store_info, item=item_info, desiredAmount=quantity_info, pricePerUnit=price_info)
         try:
-            db.session.add(new_task)
+            db.session.add(new_entry)
             db.session.commit()
             return redirect('/')
-        except:
-            return 'There was an issue adding your item'
+        except Exception as e:
+        	return str(e)
 
     else:
         tasks = Todo.query.order_by(Todo.date_created).all()
         return render_template('index.html', tasks=tasks)
+
+@app.route('/signup', methods=['POST', 'GET']) 
+def signup():
+	if request.method == 'POST':
+		return "POST COMMAND TO signup"
+	else:
+		return render_template('createAccount.html')
+
+@app.route('/signin.html', methods=['POST', 'GET']) 
+def signin():
+	if request.method == 'POST':
+		return "POST COMMAND TO signIn"
+	else:
+		return render_template('signin.html')
 
 @app.route('/delete/<int:id>')
 def delete(id):
@@ -50,6 +69,9 @@ def update(id):
 	task = Todo.query.get_or_404(id)
 	if request.method == 'POST':
 		task.content =  request.form['content']
+		task.item = request.form['item_info']
+		task.desiredAmount = request.form['quantity']
+		task.pricePerUnit = request.form['price']
 		try:
 			db.session.commit()
 			return redirect('/')

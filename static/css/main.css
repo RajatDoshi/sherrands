@@ -5,7 +5,7 @@ body, html {
 
 .content {
     margin: 0 auto;
-    width: 400px;
+    width: 500px;
 }
 
 table, td, th {
@@ -30,6 +30,6 @@ td {
     margin-top: 20px;
 }
 
-#content {
-    width: 70%;
+#content, #item_info, #quantity, #price {
+    width: 30%;
 }

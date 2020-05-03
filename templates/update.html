@@ -9,7 +9,16 @@
 	<h1 style="text-align: center">Update Item</h1>
 
 	<form actions="/update/{{tasks.id}}" method="POST">
-		<input type="text" name="content" id="content" value="{{tasks.content}}">
+        <label for="Store">Store:</label><br>
+		<input type="text" name="content" id="content" value="{{tasks.content}}"><br>
+		<label for="Item">Item:</label><br>
+		<input type="text" name="item_info" id="item_info" value="{{tasks.item}}"><br>
+		<label for="Quantity">Quantity:</label><br>
+		<input type="text" name="quantity" id="quantity" value="{{tasks.desiredAmount}}"><br>
+		<label for="Price">Price:</label><br>
+		<input type="text" name="price" id="price" value="{{tasks.pricePerUnit}}"><br>
 		<input type="submit" value="Update">
+	</form>
 </div> 
 {% endblock %}
+
