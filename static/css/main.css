@@ -5,7 +5,7 @@ body, html {
 
 .content {
     margin: 0 auto;
-    width: 500px;
+    width: 100%;
 }
 
 table, td, th {
@@ -13,20 +13,35 @@ table, td, th {
 }
 
 table {
+    font-family: Courier New;
+    width: 70%;
+    margin-left:auto;
+    margin-right:auto;
     border-collapse: collapse;
-    width: 100%;
 }
 
 th {
-    height: 30px;
+    background-color: lightblue;
+    color: #336B6B;
+    height: 35px;
+    font-size: 18px;
 }
 
 td {
+    color: #333;
+    font-size: 16px;
     text-align: center;
     padding: 5px;
 }
 
+tr:nth-child(even){background-color: #f2f2f2}
+
+h1 {
+    color: #336B6B;
+}
+
 .form {
+    margin-left: 20px;
     margin-top: 20px;
 }
 

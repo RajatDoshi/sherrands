@@ -1,15 +1,17 @@
 #FLASK_APP=main.py FLASK_ENV=development flask run --port 4047
-from flask import Flask, render_template, url_for, request, redirect, flash
+from flask import Flask, render_template, url_for, request, redirect, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
 app = Flask(__name__)
+app.secret_key = '#d\xe9X\x00\xbe~Uq\xebX\xae\x81\x1fs\t\xb4\x99\xa3\x87\xe6.\xd1_'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 app.config['SQLALCHEMY_BINDS'] = {'logins': 'sqlite:///logins.db'}
 db = SQLAlchemy(app)
 
 class Todo(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
+	user = db.Column(db.String(200))
 	content = db.Column(db.String(200))
 	item = db.Column(db.String(200))
 	desiredAmount = db.Column(db.String(200))
@@ -29,25 +31,34 @@ class Logins(db.Model):
 	address = db.Column(db.String(200))
 	password = db.Column(db.String(200))
 
+# @app.route('/', defaults={'user': 'Anonymous'})
 @app.route('/', methods=['POST', 'GET']) 
 def index(): 
-    if request.method == 'POST':
-        store_info = request.form['content']
-        item_info = request.form['item_info']
-        quantity_info = request.form['quantity']
-        price_info = request.form['price']
+	if request.method == 'POST':
+		if 'user' in session:
+			curr_user = session['user']
+		else:
+			curr_user = 'Anonymous'
+		store_info = request.form['content']
+		item_info = request.form['item_info']
+		quantity_info = request.form['quantity']
+		price_info = request.form['price']
 
-        new_entry = Todo(content=store_info, item=item_info, desiredAmount=quantity_info, pricePerUnit=price_info)
-        try:
-            db.session.add(new_entry)
-            db.session.commit()
-            return redirect('/')
-        except Exception as e:
-        	return str(e)
+		new_entry = Todo(user=curr_user, content=store_info, item=item_info, desiredAmount=quantity_info, pricePerUnit=price_info)
+		try:
+			db.session.add(new_entry)
+			db.session.commit()
+			return redirect('/')
+		except Exception as e:
+			return str(e)
 
-    else:
-        tasks = Todo.query.order_by(Todo.date_created).all()
-        return render_template('index.html', tasks=tasks)
+	else:
+		tasks = Todo.query.order_by(Todo.date_created).all()
+		if 'user' in session:
+			curr_user = session['user']
+			return render_template('index.html', tasks=tasks, signInStatus="Sign Out", signUpStatus = "")
+		else:
+			return render_template('index.html', tasks=tasks, signInStatus="Sign In", signUpStatus = "Sign Up")
 
 @app.route('/process_signup', methods=['POST', 'GET']) 
 def process_signup():
@@ -82,14 +93,29 @@ def signup():
 @app.route('/signin', methods=['POST', 'GET']) 
 def signin():
 	if request.method == 'POST':
+		if 'user' in session:
+			del session['user']
+			del session['address']
 		uname = request.form['uname']
 		password_info = request.form['psw']
 		related_password = db.session.query(Logins.password).filter_by(username=uname).first()
 		if (not related_password == None) and password_info == related_password[0]:
+			related_address = db.session.query(Logins.address).filter_by(username=uname).first()
+			session['user'] = uname
+			session['address'] = related_address
 			return redirect('/')
-		return render_template('signin.html')
+		return render_template('signin.html', errorMessage="Wrong Password or Username")
 	else:
 		return render_template('signin.html')
+
+@app.route('/signout', methods=['GET']) 
+def sign_out():
+	if 'user' not in session:
+		return redirect('/')
+	del session['user']
+	del session['address']
+	return redirect('/')
+
 
 @app.route('/delete/<int:id>')
 def delete(id):
@@ -120,4 +146,4 @@ def update(id):
 
 # main driver function 
 if __name__ == '__main__':   
-    app.run(debug=True) 
+	app.run(debug=True) 

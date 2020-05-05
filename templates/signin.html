@@ -51,6 +51,10 @@
   	text-align: center;
   	padding: 16px;
   }
+  .error_message {
+    text-align: center;
+    color: red;
+  }
 
   span.psw {
     float: right;
@@ -82,6 +86,9 @@
 <!--     <div class="imgcontainer">
       <img src="img/img_avatar.jpg" alt="Avatar" class="avatar">
     </div> -->
+    <div class="error_message">
+      <p> {{ errorMessage }} </p>
+    </div>
 
     <div class="container">
       <label for="uname"><b>Username</b></label>
@@ -98,7 +105,7 @@
 
     <div class="cancel_button" style="background-color:#f1f1f1">
 <!--      <button type="button" class="cancel_button">Cancel</button>
- -->     <button onclick="location.href = '/signup';" id="cancel_button" class="cancel_button">Cancel</button>
+ -->     <button onclick="location.href = '/';" id="cancel_button" class="cancel_button">Cancel</button>
     </div>
   </form>
 </body>
