@@ -30,6 +30,10 @@ td {
     margin-top: 20px;
 }
 
+.signin {
+    text-align: right;
+}
+
 #content, #item_info, #quantity, #price {
     width: 30%;
 }

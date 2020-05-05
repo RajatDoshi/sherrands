@@ -6,6 +6,10 @@
 
 {% block body %}
 <div class = "content">
+    <div class="signin">
+        <a href="/signin">Log in</a>
+        <a href="/signup">Sign up</a>
+    </div>
 	<h1 style="text-align: center"> Sherrands </h1>
 	{% if tasks|length < 1 %}
     <h4 style="text-align: center">There are no items on your list. Create one below!</h4>
