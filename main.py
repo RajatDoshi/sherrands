@@ -1,4 +1,4 @@
-#FLASK_APP=main.py FLASK_ENV=development flask run --port 4047
+#FLASK_APP=main.py FLASK_ENV=development flask run --port 4050
 from flask import Flask, render_template, url_for, request, redirect, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -25,10 +25,10 @@ class Logins(db.Model):
 	__bind_key__ = 'logins'
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(200))
-	first_name = db.Column(db.String(200))
-	last_name = db.Column(db.String(200))
+	name = db.Column(db.String(200))
 	email = db.Column(db.String(200))
 	address = db.Column(db.String(200))
+	neighborhood = db.Column(db.String(200))
 	password = db.Column(db.String(200))
 
 # @app.route('/', defaults={'user': 'Anonymous'})
@@ -64,15 +64,15 @@ def index():
 def process_signup():
 	if request.method == 'POST':
 		uname = request.form['username']
-		fname = request.form['first_name']
-		lname = request.form['last_name']
+		name = request.form['name']
 		email_info = request.form['email']
 		addy = request.form['address']
+		zip_code = request.form['zipcode']
 		password_info = request.form['password']
 		repeat_pass = request.form['psw-repeat']
 		if not password_info == repeat_pass:
 			return "passwords don't match"
-		login_var = Logins(username=uname, first_name=fname, last_name=lname, email=email_info, address=addy, password=password_info)
+		login_var = Logins(username=uname, name=name, email=email_info, address=addy, neighborhood=zip_code, password=password_info)
 		try:
 			db.session.add(login_var)
 			db.session.commit()
@@ -103,6 +103,8 @@ def signin():
 			related_address = db.session.query(Logins.address).filter_by(username=uname).first()
 			session['user'] = uname
 			session['address'] = related_address
+			related_neighborhood = db.session.query(Logins.neighborhood).filter_by(username=uname).first()
+			session['neighborhood'] = related_neighborhood
 			return redirect('/')
 		return render_template('signin.html', errorMessage="Wrong Password or Username")
 	else:
@@ -114,8 +116,28 @@ def sign_out():
 		return redirect('/')
 	del session['user']
 	del session['address']
+	del session['neighborhood']
 	return redirect('/')
 
+@app.route('/outputs', methods=['POST', 'GET']) 
+def goingToStore():
+	if request.method == 'POST':
+		if 'user' not in session:
+			#PRINT pop up message about needing to sign in
+			return redirect('/signin')
+		curr_user = session['user']
+		going_to_store = request.form['store']
+		curr_neighborhood = session['neighborhood'][0]
+		usersInNeighborhood = db.session.query(Logins).filter_by(neighborhood=curr_neighborhood).all()
+		loginVarForCurrUser = 0
+		for l in usersInNeighborhood:
+			if l.username == curr_user:
+				loginVarForCurrUser = l
+				usersInNeighborhood.remove(l)
+		return str(usersInNeighborhood[0].username)
+
+	else:
+		return "get request outputs"
 
 @app.route('/delete/<int:id>')
 def delete(id):

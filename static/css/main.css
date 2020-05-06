@@ -45,6 +45,12 @@ h1 {
     margin-top: 20px;
 }
 
+.outputForm {
+    text-align: center;
+    font-weight: bold;
+}
+
+
 .signin {
     text-align: right;
 }
