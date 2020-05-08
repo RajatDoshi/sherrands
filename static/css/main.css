@@ -50,6 +50,20 @@ h1 {
     font-weight: bold;
 }
 
+.button {
+  background-color: lightblue;
+  border: 1px solid #aaa;;
+  color: #336B6B;
+  font-weight: bold;
+  width: 32.9%;
+  padding: 10px 0px;
+  text-align: center;
+  display: inline-block;
+  font-size: 14px;
+  margin: 4px 2px;
+  cursor: pointer;
+
+}
 
 .signin {
     text-align: right;
@@ -57,4 +71,14 @@ h1 {
 
 #content, #item_info, #quantity, #price {
     width: 30%;
+}
+
+#myInput {
+    width: 66.45%; 
+    font-size: 16px; 
+    padding: 12px 20px 12px 40px; 
+    border: 1px solid #ddd; 
+    margin-left:15%;
+    margin-right:15%;
+    text-align: center;
 }

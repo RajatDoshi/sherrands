@@ -1,7 +1,12 @@
+#command to run the server
 #FLASK_APP=main.py FLASK_ENV=development flask run --port 4050
+
 from flask import Flask, render_template, url_for, request, redirect, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+import nexmo
+
+client = nexmo.Client(key='332168c1', secret='IYB7GNSXl8HNtEMc')
 
 app = Flask(__name__)
 app.secret_key = '#d\xe9X\x00\xbe~Uq\xebX\xae\x81\x1fs\t\xb4\x99\xa3\x87\xe6.\xd1_'
@@ -12,6 +17,7 @@ db = SQLAlchemy(app)
 class Todo(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	user = db.Column(db.String(200))
+	neighborhood = db.Column(db.String(200))
 	content = db.Column(db.String(200))
 	item = db.Column(db.String(200))
 	desiredAmount = db.Column(db.String(200))
@@ -37,14 +43,17 @@ def index():
 	if request.method == 'POST':
 		if 'user' in session:
 			curr_user = session['user']
+			neighborhoodVal = int(session['neighborhood'][0])
+			print("bro", neighborhoodVal)
 		else:
 			curr_user = 'Anonymous'
+			neighborhoodVal = 00000
 		store_info = request.form['content']
 		item_info = request.form['item_info']
 		quantity_info = request.form['quantity']
 		price_info = request.form['price']
 
-		new_entry = Todo(user=curr_user, content=store_info, item=item_info, desiredAmount=quantity_info, pricePerUnit=price_info)
+		new_entry = Todo(user=curr_user, content=store_info, neighborhood=neighborhoodVal, item=item_info, desiredAmount=quantity_info, pricePerUnit=price_info)
 		try:
 			db.session.add(new_entry)
 			db.session.commit()
@@ -56,9 +65,9 @@ def index():
 		tasks = Todo.query.order_by(Todo.date_created).all()
 		if 'user' in session:
 			curr_user = session['user']
-			return render_template('index.html', tasks=tasks, signInStatus="Sign Out", signUpStatus = "")
+			return render_template('index.html', tasks=tasks, signInStatus="Sign Out", signUpStatus = "", neigh=session['neighborhood'][0], userNameForFilter=session['user'])
 		else:
-			return render_template('index.html', tasks=tasks, signInStatus="Sign In", signUpStatus = "Sign Up")
+			return render_template('index.html', tasks=tasks, signInStatus="Sign In", signUpStatus = "Sign Up", neigh=0, userNameForFilter='Anonymous')
 
 @app.route('/process_signup', methods=['POST', 'GET']) 
 def process_signup():
@@ -119,25 +128,28 @@ def sign_out():
 	del session['neighborhood']
 	return redirect('/')
 
-@app.route('/outputs', methods=['POST', 'GET']) 
-def goingToStore():
-	if request.method == 'POST':
-		if 'user' not in session:
-			#PRINT pop up message about needing to sign in
-			return redirect('/signin')
-		curr_user = session['user']
-		going_to_store = request.form['store']
-		curr_neighborhood = session['neighborhood'][0]
-		usersInNeighborhood = db.session.query(Logins).filter_by(neighborhood=curr_neighborhood).all()
-		loginVarForCurrUser = 0
-		for l in usersInNeighborhood:
-			if l.username == curr_user:
-				loginVarForCurrUser = l
-				usersInNeighborhood.remove(l)
-		return str(usersInNeighborhood[0].username)
-
-	else:
-		return "get request outputs"
+@app.route('/sendMessage', methods=['POST', 'GET']) 
+def sendMessage():
+	if 'user' not in session:
+		return redirect('/signin')
+	curr_user = session['user']
+	jsdata = request.form['javascript_data']
+	going_to_store = str(jsdata)
+	# going_to_store = "Walmart"
+	curr_neighborhood = session['neighborhood'][0]
+	usersInNeighborhood = db.session.query(Logins).filter_by(neighborhood=curr_neighborhood).all()
+	res = {}
+	for login in usersInNeighborhood:
+		itemList = db.session.query(Todo).filter_by(user=login.username).all()
+		for item in itemList:
+			if item.content == going_to_store:
+				temp = "Buy " + item.desiredAmount + " " + item.item + " @ $" + item.pricePerUnit
+				if not login.username in res:
+					res[login.username] = [temp]
+				else:
+					res[login.username].append(temp)
+	response = client.send_message({'from': '17324199309','to': '14046637639','text': str(res)})
+	return res
 
 @app.route('/delete/<int:id>')
 def delete(id):
