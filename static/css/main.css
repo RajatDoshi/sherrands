@@ -43,12 +43,25 @@ h1 {
 .form {
     margin-left: 20px;
     margin-top: 20px;
+    color: #336B6B;
+    font-weight: bold;
 }
 
 .outputForm {
+    font-size: 24px;
     text-align: center;
     font-weight: bold;
+    color: #336B6B;
 }
+
+input[type=text] {
+  width: 25%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
 
 .button {
   background-color: lightblue;
@@ -62,8 +75,18 @@ h1 {
   font-size: 14px;
   margin: 4px 2px;
   cursor: pointer;
-
 }
+
+input[type=button], input[type=submit], input[type=reset] {
+  background-color: lightblue;
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  text-decoration: none;
+  margin: 4px 4px;
+  cursor: pointer;
+}
+
 
 .signin {
     text-align: right;
@@ -72,6 +95,14 @@ h1 {
 #content, #item_info, #quantity, #price {
     width: 30%;
 }
+
+::placeholder {
+  font-weight: bold;
+  font-size: 14px;
+  text-align: center;
+
+}
+
 
 #myInput {
     width: 66.45%; 
