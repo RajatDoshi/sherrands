@@ -1,5 +1,5 @@
 #command to run the server
-#FLASK_APP=main.py FLASK_ENV=development flask run --port 4050
+#FLASK_APP=main.py FLASK_ENV=development flask run --port 4051
 
 from flask import Flask, render_template, url_for, request, redirect, flash, session
 from flask_sqlalchemy import SQLAlchemy
@@ -148,7 +148,9 @@ def sendMessage():
 					res[login.username] = [temp]
 				else:
 					res[login.username].append(temp)
-	response = client.send_message({'from': '17324199309','to': '14046637639','text': str(res)})
+	#twilio
+	#no text messages rn
+	# response = client.send_message({'from': '17324199309','to': '14046637639','text': str(res)})
 	return res
 
 @app.route('/delete/<int:id>')
