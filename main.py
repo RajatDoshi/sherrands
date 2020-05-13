@@ -1,5 +1,5 @@
 #command to run the server
-#FLASK_APP=main.py FLASK_ENV=development flask run --port 4067
+#FLASK_APP=main.py FLASK_ENV=development flask run --port 4051
 
 from flask import Flask, render_template, url_for, request, redirect, flash, session
 from flask_sqlalchemy import SQLAlchemy
@@ -13,6 +13,9 @@ app.secret_key = '#d\xe9X\x00\xbe~Uq\xebX\xae\x81\x1fs\t\xb4\x99\xa3\x87\xe6.\xd
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 app.config['SQLALCHEMY_BINDS'] = {'logins': 'sqlite:///logins.db'}
 db = SQLAlchemy(app)
+
+setOfApprovedStores = set()
+setOfApprovedStores.add("practicestore123")
 
 class Todo(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -150,7 +153,7 @@ def sendMessage():
 					res[login.username].append(temp)
 	#twilio
 	#no text messages rn
-	response = client.send_message({'from': '17324199309','to': '14046637639','text': str(res)})
+	# response = client.send_message({'from': '17324199309','to': '14046637639','text': str(res)})
 	return res
 
 @app.route('/delete/<int:id>')
