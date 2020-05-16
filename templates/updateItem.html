@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Sherrands</title>
+{% endblock %}
+
+{% block body %}
+<div class = "content">
+	<h1 style="text-align: center">Update Product Inventory</h1>
+
+	<form actions="/updateProd/{{tasks.id}}" method="POST">
+        <label for="Store">Store:</label><br>
+        <select class="select-css" name="store">
+        {% for store in approvedStoreList %}
+        	{% if store == tasks.prodStore %}
+            	<option value="{{ store }}" selected> {{ store }} </option>
+            {% else %}
+            	<option value="{{ store }}"> {{ store }} </option>
+            {% endif %}
+        {% endfor %}
+        </select>
+	    <label for="Name">Product Name:</label><br>
+		<input type="text" name="name" id="name" value="{{tasks.prodName}}" required><br>
+        
+        <label for="Price">Produce Price:</label><br>
+		<input type="text" name="price" id="price" value="{{tasks.prodPrice}}" required><br>
+        
+        <label for="Size">Product Size:</label><br>
+		<input type="text" name="size" id="size" value="{{tasks.prodSize}}" required><br>
+		
+		<label for="Quantity">Produce Quantity:</label><br>
+		<input type="text" name="quantity" id="quantity" value="{{tasks.prodQuantity}}" required><br>
+
+		<input type="submit" value="Update">
+	</form>
+</div> 
+{% endblock %}

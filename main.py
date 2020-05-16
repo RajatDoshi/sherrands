@@ -1,5 +1,5 @@
 #command to run the server
-#FLASK_APP=main.py FLASK_ENV=development flask run --port 4051
+#FLASK_APP=main.py FLASK_ENV=development flask run --port 4070
 
 from flask import Flask, render_template, url_for, request, redirect, flash, session
 from flask_sqlalchemy import SQLAlchemy
@@ -11,11 +11,10 @@ client = nexmo.Client(key='332168c1', secret='IYB7GNSXl8HNtEMc')
 app = Flask(__name__)
 app.secret_key = '#d\xe9X\x00\xbe~Uq\xebX\xae\x81\x1fs\t\xb4\x99\xa3\x87\xe6.\xd1_'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
-app.config['SQLALCHEMY_BINDS'] = {'logins': 'sqlite:///logins.db'}
+app.config['SQLALCHEMY_BINDS'] = {'logins': 'sqlite:///logins.db', 'productDataBase': 'sqlite:///productDataBase.db'}
 db = SQLAlchemy(app)
 
-setOfApprovedStores = set()
-setOfApprovedStores.add("practicestore123")
+approvedStoreList = ["Walmart", "Target", "Kroger"]
 
 class Todo(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -39,6 +38,15 @@ class Logins(db.Model):
 	address = db.Column(db.String(200))
 	neighborhood = db.Column(db.String(200))
 	password = db.Column(db.String(200))
+
+class Products(db.Model):
+	__bind_key__ = 'productDataBase'
+	id = db.Column(db.Integer, primary_key=True)
+	prodStore = db.Column(db.String(200))
+	prodName = db.Column(db.String(200))
+	prodPrice = db.Column(db.Float, default=0.0)
+	prodSize = db.Column(db.String(200))
+	prodQuantity = db.Column(db.Integer, default=0)
 
 # @app.route('/', defaults={'user': 'Anonymous'})
 @app.route('/', methods=['POST', 'GET']) 
@@ -68,9 +76,36 @@ def index():
 		tasks = Todo.query.order_by(Todo.date_created).all()
 		if 'user' in session:
 			curr_user = session['user']
-			return render_template('index.html', tasks=tasks, signInStatus="Sign Out", signUpStatus = "", neigh=session['neighborhood'][0], userNameForFilter=session['user'])
+			return render_template('index.html', tasks=tasks, signInStatus="Sign Out", signUpStatus = "", neigh=session['neighborhood'][0], userNameForFilter=session['user'], approvedStoreList=approvedStoreList)
 		else:
-			return render_template('index.html', tasks=tasks, signInStatus="Sign In", signUpStatus = "Sign Up", neigh=0, userNameForFilter='Anonymous')
+			return render_template('index.html', tasks=tasks, signInStatus="Sign In", signUpStatus = "Sign Up", neigh=0, userNameForFilter='Anonymous', approvedStoreList=approvedStoreList)
+
+@app.route('/addItems', methods=['POST', 'GET']) 
+def addItems():
+	if request.method == 'POST':
+		prodStore = request.form['store']
+		prodName = request.form['name']
+		prodPrice = request.form['price']
+		prodSize = request.form['size']
+		prodQuantity = request.form['quantity']
+		prod_var = Products(prodStore=prodStore, prodName=prodName, prodPrice=float(prodPrice), prodSize=prodSize, prodQuantity=int(prodQuantity))
+		try:
+			db.session.add(prod_var)
+			db.session.commit()
+			return redirect('/addItems')
+		except Exception as e:
+			return str(e)
+
+		temp = db.session.query(Products.prodName).filter_by(prodStore="Walmart").all()
+		print(temp)
+		return str(temp)
+	if request.method == 'GET':
+		tasks = Products.query.order_by(Products.prodStore).all()
+		if 'user' in session:
+			curr_user = session['user']
+			return render_template('addItem.html', tasks=tasks, signInStatus="Sign Out", signUpStatus = "", neigh=session['neighborhood'][0], userNameForFilter=session['user'], approvedStoreList=approvedStoreList)
+		else:
+			return render_template('addItem.html', tasks=tasks, signInStatus="Sign In", signUpStatus = "Sign Up", neigh=0, userNameForFilter='Anonymous', approvedStoreList=approvedStoreList)
 
 @app.route('/process_signup', methods=['POST', 'GET']) 
 def process_signup():
@@ -156,6 +191,18 @@ def sendMessage():
 	# response = client.send_message({'from': '17324199309','to': '14046637639','text': str(res)})
 	return res
 
+@app.route('/deleteProd/<int:id>')
+def deleteProd(id):
+	task_to_delete = Products.query.get_or_404(id)
+
+	try:
+		db.session.delete(task_to_delete)
+		db.session.commit()
+		return redirect('/addItems')
+	except:
+		return "There was a problem in deleting that item"
+
+
 @app.route('/delete/<int:id>')
 def delete(id):
 	task_to_delete = Todo.query.get_or_404(id)
@@ -166,6 +213,24 @@ def delete(id):
 		return redirect('/')
 	except:
 		return "There was a problem in deleting that item"
+
+@app.route('/updateProd/<int:id>', methods=["POST", "GET"])
+def updateProd(id):
+	task = Products.query.get_or_404(id)
+	if request.method == 'POST':
+		task.prodStore =  request.form['store']
+		task.prodName = request.form['name']
+		task.prodPrice = float(request.form['price'])
+		task.prodSize = request.form['size']
+		task.prodQuantity = int(request.form['quantity'])
+		try:
+			db.session.commit()
+			return redirect('/addItems')
+		except:
+			return 'There was an issue with your update'
+	else:
+		return render_template('updateItem.html', tasks=task, approvedStoreList=approvedStoreList)
+
 
 @app.route('/update/<int:id>', methods=["POST", "GET"])
 def update(id):
@@ -181,7 +246,7 @@ def update(id):
 		except:
 			return 'There was an issue with your update'
 	else:
-		return render_template('update.html', tasks=task)
+		return render_template('update.html', tasks=task, approvedStoreList=approvedStoreList)
 
 # main driver function 
 if __name__ == '__main__':   

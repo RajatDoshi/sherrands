@@ -79,18 +79,23 @@
     <div class="form">
 		<form actions="/" method="POST">
             <label for="Store">Store:</label><br>
-            <input type="text" id="content" name="content"><br>
+            <select class="select-css" name="content">
+            {% for store in approvedStoreList %}
+                <option value="{{ store }}">{{ store }}</option>
+            {% endfor %}
+            </select>
             <label for="Item">Item:</label><br>
             <input type="text" id="item_info" name="item_info"><br>
             <label for="Quantity">Quantity:</label><br>
             <input type="text" id="quantity" name="quantity"><br>
             <label for="Price">Price:</label><br>
-            <input type="text" id="price" name="price">
-            <br>
+            <input type="text" id="price" name="price"><br>
+
 			<input type="submit" value="Submit">
             <br>
 		</form>
 	</div>
+
     <br> 
     <br>
 

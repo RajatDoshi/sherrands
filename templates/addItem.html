@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<title>Sherrands Inventory Management</title>
+{% endblock %}
+
+{% block body %}
+<div class = "content">
+    <div class="signin">
+        {% if signInStatus == "Sign Out"%}
+        <a href="/signout">{{signInStatus}}</a>
+        {% else %}
+        <a href="/signin">{{signInStatus}}</a>
+        {% endif %}
+        <a href="/signup">{{signUpStatus}}</a>
+    </div>
+	<h1 style="text-align: center"> Sherrands Inventory Management</h1>
+	{% if tasks|length < 1 %}
+    <h4 style="text-align: center">There are no items on your list. Create one below!</h4>
+    {% else %}
+    <br>    
+    <div style="overflow-x:auto;">
+        <table>
+            <thead>
+
+            <tr>
+                <th>Store</th>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Size </th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="myTable">
+            {% for task in tasks %}
+                <tr>
+                    <td>{{ task.prodStore }}</td>
+                    <td>{{ task.prodName }}</td>
+                    <td>{{ task.prodPrice }}</td>
+                    <td>{{ task.prodSize }}</td>
+                    <td>{{ task.prodQuantity }}</td>
+                    <td>
+                        <a href="/deleteProd/{{task.id}}">Delete</a>
+                        <br>
+                        <a href="/updateProd/{{task.id}}">Update</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+    {% endif %}
+
+    <div class="form">
+		<form actions="/" method="POST">
+            <label for="Store">Store:</label><br>
+            <select class="select-css" name="store">
+            {% for store in approvedStoreList %}
+                <option value="{{ store }}">{{ store }}</option>
+            {% endfor %}
+            </select>
+            
+            <label for="Name">Product Name:</label><br>
+            <input type="text" id="name" name="name" required><br>
+            <label for="Price">Produce Price:</label><br>
+            <input type="text" id="price" name="price" required><br>
+            <label for="Size">Product Size:</label><br>
+            <input type="text" id="size" name="size" required><br>
+            <label for="Quantity">Produce Quantity:</label><br>
+            <input type="text" id="quantity" name="quantity" required><br>
+
+			<input type="submit" value="Submit">
+            <br>
+		</form>
+	</div>
+
+  <br> 
+
+</div> 
+{% endblock %}
+
