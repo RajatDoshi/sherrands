@@ -107,6 +107,10 @@ def addItems():
 		else:
 			return render_template('addItem.html', tasks=tasks, signInStatus="Sign In", signUpStatus = "Sign Up", neigh=0, userNameForFilter='Anonymous', approvedStoreList=approvedStoreList)
 
+@app.route('/lookUpItem', methods=['POST', 'GET']) 
+def lookUpItem():
+	
+
 @app.route('/process_signup', methods=['POST', 'GET']) 
 def process_signup():
 	if request.method == 'POST':
