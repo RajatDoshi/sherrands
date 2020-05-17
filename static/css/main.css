@@ -54,6 +54,13 @@ h1 {
     color: #336B6B;
 }
 
+.cancel_button {
+    width: auto;
+    padding: 10px 18px;
+    background-color:lightblue;
+    color: white;
+}
+
 input[type=text] {
   width: 25%;
   padding: 12px 20px;
@@ -102,10 +109,16 @@ input[type=button], input[type=submit], input[type=reset] {
   text-align: center;
 
 }
-
+.fa-search{
+  position: absolute;
+  top: 12.5%;
+  right: 16.5%;
+  font-size: 25px;
+  color: lightblue;
+}
 
 #myInput {
-    width: 66.45%; 
+    width: 70%;
     font-size: 16px; 
     padding: 12px 20px 12px 40px; 
     border: 1px solid #ddd; 

@@ -5,10 +5,10 @@
 {% endblock %}
 
 {% block body %}
-<div class = "content">
+<div class = "form">
 	<h1 style="text-align: center">Update Item</h1>
 
-	<form actions="/update/{{tasks.id}}" method="POST">
+	<form actions="/update/{{tasks.id}}/{{tasks.desiredAmount}}" method="POST">
         <label for="Store">Store:</label><br>
         <select class="select-css" name="content">
         {% for store in approvedStoreList %}
@@ -23,8 +23,6 @@
 		<input type="text" name="item_info" id="item_info" value="{{tasks.item}}"><br>
 		<label for="Quantity">Quantity:</label><br>
 		<input type="text" name="quantity" id="quantity" value="{{tasks.desiredAmount}}"><br>
-		<label for="Price">Price:</label><br>
-		<input type="text" name="price" id="price" value="{{tasks.pricePerUnit}}"><br>
 		<input type="submit" value="Update">
 	</form>
 </div> 

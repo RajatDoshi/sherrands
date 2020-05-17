@@ -19,7 +19,12 @@
 	{% if tasks|length < 1 %}
     <h4 style="text-align: center">There are no items on your list. Create one below!</h4>
     {% else %}
-    <br>    
+
+    <div class="search-box">
+      <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search Inventory List">
+      <i class="fas fa-search"></i><br><br>
+    </div>
+
     <div style="overflow-x:auto;">
         <table>
             <thead>
@@ -50,7 +55,16 @@
             {% endfor %}
             </tbody>
         </table>
-
+          <script>
+          $(document).ready(function(){
+            $("#myInput").on("keyup", function() {
+              var value = $(this).val().toLowerCase();
+              $("#myTable tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+              });
+            });
+          });
+          </script>
     </div>
 
     {% endif %}
