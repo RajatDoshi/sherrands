@@ -54,18 +54,34 @@ h1 {
     color: #336B6B;
 }
 
+.cancel_button {
+    width: auto;
+    padding: 10px 18px;
+    background-color:lightblue;
+    color: white;
+}
+
 input[type=text] {
   width: 25%;
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
-  font-size: 14px;
+  font-size: 16px;
 }
 
+.btn-prim {
+  background-color: lightblue;
+  color: #336B6B;
+  width: 12.5%;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 10px 0px;
+  margin-left: 15%;
+}
 
 .button {
   background-color: lightblue;
-  border: 1px solid #aaa;;
+  border: 1px solid #aaa;
   color: #336B6B;
   font-weight: bold;
   width: 32.9%;
@@ -92,24 +108,149 @@ input[type=button], input[type=submit], input[type=reset] {
     text-align: right;
 }
 
-#content, #item_info, #quantity, #price {
+#content, #item_info, #quantity, #price, #size, #name {
     width: 30%;
 }
 
 ::placeholder {
   font-weight: bold;
-  font-size: 14px;
+  font-size: 16px;
   text-align: center;
 
 }
-
+.fa-search{
+  position: absolute;
+  top: 12.5%;
+  right: 16.5%;
+  font-size: 25px;
+  color: lightblue;
+}
 
 #myInput {
-    width: 66.45%; 
+    width: 70%;
     font-size: 16px; 
     padding: 12px 20px 12px 40px; 
     border: 1px solid #ddd; 
     margin-left:15%;
     margin-right:15%;
     text-align: center;
+}
+
+.select-css {
+  display: block;
+  font-size: 16px;
+  font-family: sans-serif;
+  padding: 12px 20px;
+  width: 30%;
+  max-width: 30%;
+  margin: 8px 0;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0px;
+  border: 1px solid #ddd;
+
+  background-color: white;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat, repeat;
+  background-position: right .7em top 50%, 0 0;
+  background-size: .65em auto, 25%;
+}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* Set a style for all buttons */
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+.containerForm {
+  padding: 16px;
+}
+
+span.psw {
+  float: right;
+  padding-top: 16px;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  padding-top: 60px;
+}
+
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+  border: 1px solid #888;
+  width: 30%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button (x) */
+.close {
+  position: absolute;
+  right: 25px;
+  top: 0;
+  color: #000;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: red;
+  cursor: pointer;
+}
+
+/* Add Zoom Animation */
+.animate {
+  -webkit-animation: animatezoom 0.6s;
+  animation: animatezoom 0.6s
+}
+
+@-webkit-keyframes animatezoom {
+  from {-webkit-transform: scale(0)} 
+  to {-webkit-transform: scale(1)}
+}
+  
+@keyframes animatezoom {
+  from {transform: scale(0)} 
+  to {transform: scale(1)}
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+  span.psw {
+     display: block;
+     float: none;
+  }
+  .cancelbtn {
+     width: 100%;
+  }
 }
