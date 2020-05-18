@@ -2,7 +2,9 @@
 
 {% block head %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
+<script type="text/javascript" src='https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.3.min.js'></script>
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js'></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 <title>Sherrands</title>
 {% endblock %}
 
@@ -55,11 +57,11 @@
                     <td>{{ task.item }}</td>
                     <td>{{ task.desiredAmount }}</td>
                     <td>{{ task.pricePerUnit }}</td>
-    <!--                 <td>{{ task.date_created.date() }}</td>
-     -->                <td>
+<!--                     <td>{{ task.date_created.date() }}</td> -->
+                    <td>
                         <a href="/delete/{{task.id}}">Delete</a>
                         <br>
-                        <a href="/update/{{task.id}}/{{task.desiredAmount}}">Update</a>
+                      <a href="#id01" data-toggle="modal" data-ID-val = {{task.id}} data-store-val = {{task.content}} data-task-qty={{task.desiredAmount}} data-item-info={{task.item}}>Update</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -99,7 +101,7 @@
     <br> 
     <br>
 
-    <div class="outputForm" method="post" onsubmit="myGoingToFilter();return false;">
+    <div class="outputForm" method="post">
         <form id="outputForm">
           <label for="gotostore">GOING TO:</label>
           <input type="text" placeholder="Type Name of Store" id="store" name="store" >
@@ -166,6 +168,55 @@
 
     </script>
 
+  <div id="id01" class="modal">
+    <form class="modal-content animate" action="/update" method="POST">
+      <h1 style="text-align: center">Update Item</h1>
+
+      <div class="containerForm">
+<!--           <label for="Store">Store:</label><br>
+          <select id="SelectVal" class="select-css" name="content">
+          {% for store in approvedStoreList %}
+            {% if store == storeVal %}
+                <option value="{{ store }}" selected> {{ store }} </option>
+              {% else %}
+                <option value="{{ store }}"> {{ store }} </option>
+              {% endif %}
+          {% endfor %}
+          </select>
+      <label for="Item">Item:</label><br>
+      <input type="text" name="item_info" id="item_info" value=""/><br> -->
+      <label for="Quantity">Quantity:</label><br>
+      <input type="text" name="quantity" id="quantity" value=""/><br>
+
+      <input type="hidden" name="taskID" id="taskID" value="2"/>
+      <input type="hidden" name="origQty" id="origQty" value="5"/>
+
+      <input type="submit" value="Update">
+      </div>
+
+    </form>
+  </div>
+
+  <script>
+    $('#id01').on('show.bs.modal', function(e) {
+      // var itemInfo = $(e.relatedTarget).data('item-info');
+      // $(e.currentTarget).find('input[name="item_info"]').val(itemInfo);
+
+      var desiredAmount = $(e.relatedTarget).data('task-qty');
+      $(e.currentTarget).find('input[name="quantity"]').val(desiredAmount);
+      
+      var idval = $(e.relatedTarget).data('id-val');
+      document.getElementById("taskID").value=idval;
+
+      var originalQ = $(e.relatedTarget).data('task-qty');
+      document.getElementById("origQty").value=originalQ;
+
+      // var storeval = $(e.relatedTarget).data('store-val');
+      // document.getElementById("SelectVal").value=storeval;
+
+    });
+
+  </script>
+
 </div> 
 {% endblock %}
-

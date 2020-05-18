@@ -2,6 +2,9 @@
 
 {% block head %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript" src='https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.3.min.js'></script>
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js'></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 <title>Sherrands Inventory Management</title>
 {% endblock %}
 
@@ -49,7 +52,7 @@
                     <td>
                         <a href="/deleteProd/{{task.id}}">Delete</a>
                         <br>
-                        <a href="/updateProd/{{task.id}}">Update</a>
+                      <a href="#id02" data-toggle="modal" data-id-val = {{task.id}} data-name-val = {{task.prodName}} data-price-val={{task.prodPrice}} data-size-val={{task.prodPrice}} data-qty-val={{task.prodQuantity}} data-store-val={{task.prodStore}}>Update</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -94,6 +97,61 @@
 
   <br> 
 
+    <div id="id02" class="modal">
+        <form class="modal-content animate" action="/updateProd" method="POST">
+            <h1 style="text-align: center">Update Inventory</h1>
+            <div class="containerForm">
+<!--                 <label for="Store">Store:</label><br>
+                <select id="SelectVal" class="select-css" name="store">
+                {% for store in approvedStoreList %}
+                    {% if store == tasks.prodStore %}
+                        <option value="{{ store }}" selected> {{ store }} </option>
+                    {% else %}
+                        <option value="{{ store }}"> {{ store }} </option>
+                    {% endif %}
+                {% endfor %}
+                </select> -->
+                <label for="Name">Product Name:</label><br>
+                <input type="text" name="name" id="name" value=""/><br>
+                
+                <label for="Price">Produce Price:</label><br>
+                <input type="text" name="price" id="price" value=""/><br>
+                
+                <label for="Size">Product Size:</label><br>
+                <input type="text" name="size" id="size" value=""/><br>
+                
+                <label for="Quantity">Produce Quantity:</label><br>
+                <input type="text" name="quantity" id="quantity" value=""/><br>
+
+                <input type="hidden" name="taskID" id="taskID" value="2"/>
+
+                <input type="submit" value="Update">
+            </div>
+        </form>
+    </div>
+
+    <script>
+        $('#id02').on('show.bs.modal', function(e) {
+          var nameVal = $(e.relatedTarget).data('name-val');
+          $(e.currentTarget).find('input[name="name"]').val(nameVal);
+
+          var priceVal = $(e.relatedTarget).data('price-val');
+          $(e.currentTarget).find('input[name="price"]').val(priceVal);
+
+          var sizeVal = $(e.relatedTarget).data('size-val');
+          $(e.currentTarget).find('input[name="size"]').val(sizeVal);
+
+          var desiredAmount = $(e.relatedTarget).data('qty-val');
+          $(e.currentTarget).find('input[name="quantity"]').val(desiredAmount);
+          
+          var idval = $(e.relatedTarget).data('id-val');
+          document.getElementById("taskID").value=idval;
+
+          // var storeval = $(e.relatedTarget).data('store-val');
+          // document.getElementById("SelectVal").value=storeval;
+
+        });
+    </script>
 </div> 
 {% endblock %}
 

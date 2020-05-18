@@ -178,46 +178,46 @@ def delete(id):
 
 
 #Update Product Inventory or Shopping List Code
-@app.route('/updateProd/<int:id>', methods=["POST", "GET"])
-def updateProd(id):
-	task = Products.query.get_or_404(id)
-	if request.method == 'POST':
-		task.prodStore =  request.form['store']
-		task.prodName = request.form['name']
-		task.prodPrice = float(request.form['price'])
-		task.prodSize = request.form['size']
-		task.prodQuantity = int(request.form['quantity'])
-		try:
-			db.session.commit()
-			return redirect('/addItems')
-		except:
-			return 'There was an issue with your update'
-	else:
-		return render_template('updateItem.html', tasks=task, approvedStoreList=approvedStoreList)
+@app.route('/updateProd', methods=["POST"])
+def updateProd():
+	idVAL = int(request.form['taskID'])
+	task = Products.query.get_or_404(idVAL)
+	# task.prodStore =  request.form['store']
+	task.prodName = request.form['name']
+	task.prodPrice = float(request.form['price'])
+	task.prodSize = request.form['size']
+	task.prodQuantity = int(request.form['quantity'])
+	try:
+		db.session.commit()
+		return redirect('/addItems')
+	except:
+		return 'There was an issue with your update'
 
 
-@app.route('/update/<int:id>/<int:origQty>', methods=["POST", "GET"])
-def update(id, origQty):
 
-	task = Todo.query.get_or_404(id)
-	if request.method == 'POST':
-		task.content =  request.form['content']
-		task.item = request.form['item_info']
-		task.desiredAmount = request.form['quantity']
-		try:
-			db.session.commit()
-		except:
-			return 'There was an issue with your update'
+@app.route('/update', methods=["POST"])
+def update():
+	idVAL = int(request.form['taskID'])
+	origQty=int(request.form['origQty'])
+	task = Todo.query.get_or_404(idVAL)
 
-		task2 = Products.query.get_or_404(task.prodID)
-		task2.prodQuantity = task2.prodQuantity + origQty - int(task.desiredAmount)
-		try:
-			db.session.commit()
-			return redirect('/')
-		except:
-			return 'There was an issue with your update'
-	else:
-		return render_template('update.html', tasks=task, approvedStoreList=approvedStoreList)
+	# task.content =  request.form['content']
+	# task.item = request.form['item_info']
+	task.desiredAmount = request.form['quantity']
+	try:
+		db.session.commit()
+	except:
+		return 'There was an issue with your update'
+
+	task2 = Products.query.get_or_404(task.prodID)
+	task2.prodQuantity = task2.prodQuantity + origQty - int(task.desiredAmount)
+	try:
+		db.session.commit()
+		return redirect('/')
+	except:
+		return 'There was an issue with your update'
+	# else:
+	# 	return render_template('update.html', tasks=task, approvedStoreList=approvedStoreList)
 
 
 #Sign In/ Sign Up Pipeline Code
