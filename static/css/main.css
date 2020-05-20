@@ -46,7 +46,6 @@ h1 {
     color: #336B6B;
     font-weight: bold;
 }
-
 .outputForm {
     font-size: 24px;
     text-align: center;
@@ -77,6 +76,16 @@ input[type=text] {
   font-size: 15px;
   padding: 10px 0px;
   margin-left: 15%;
+}
+
+.goLiveButtonClass {
+  background-color: lightblue;
+  color: #336B6B;
+  width: 12.5%;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 10px 0px;
+  margin-left: 44.75%; 
 }
 
 .button {

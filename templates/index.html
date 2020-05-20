@@ -14,9 +14,10 @@
         {% if signInStatus == "Sign Out"%}
         <a href="/signout">{{signInStatus}}</a>
         {% else %}
-        <a href="/signin">{{signInStatus}}</a>
+        <a href="#id04" data-toggle="modal">{{signInStatus}}</a>
+        <a href="#id03" data-toggle="modal">{{signUpStatus}}</a>
         {% endif %}
-        <a href="/signup">{{signUpStatus}}</a>
+
     </div>
 	<h1 style="text-align: center"> Sherrands </h1>
 	{% if tasks|length < 1 %}
@@ -57,16 +58,22 @@
                     <td>{{ task.item }}</td>
                     <td>{{ task.desiredAmount }}</td>
                     <td>{{ task.pricePerUnit }}</td>
-<!--                     <td>{{ task.date_created.date() }}</td> -->
                     <td>
-                        <a href="/delete/{{task.id}}">
-                            <img border="0" alt="Delete" src="https://img.pngio.com/png-x-x-png-272_256.png" width="15" height="15">
-                        </a>
+                      {% if task.user == userNameForFilter %}
+                      <a href="/delete/{{task.id}}">
+                          <img border="0" alt="Delete" src="https://img.pngio.com/png-x-x-png-272_256.png" width="15" height="15">
+                      </a>
                         <br>
                       <a href="#id01" data-toggle="modal" data-ID-val = {{task.id}} data-store-val = {{task.content}} data-task-qty={{task.desiredAmount}} data-item-info={{task.item}}>
                         <img border="0" alt="Update" src="https://cdn3.iconfinder.com/data/icons/simple-files-1/128/Update-512.png" width="17" height="17">
 
                       </a>
+                      {% else %}
+                      <br>
+                      <a href="/copy/{{task.id}}/{{task.prodID}}">
+                        <img border="0" alt="Copy" src="https://i.stack.imgur.com/lkbBY.png" width="20" height="20">
+                      </a><br>
+                      {% endif %}
                     </td>
                 </tr>
             {% endfor %}
@@ -88,6 +95,10 @@
     {% endif %}
     <button type="button" class="btn-prim" data-toggle="modal" data-target="#id02">
       Add Item
+    </button>
+
+    <button type="submit" class="goLiveButtonClass" goLiveFunc>
+      Go Live
     </button>
 
     <div id="id02" class="modal">
@@ -112,8 +123,7 @@
 
     <script type="text/javascript">
       $('#id02').on('show.bs.modal', function(e) {
-        console.log("Yo");
-      }
+      });
     </script>
 
     <br>
@@ -190,18 +200,7 @@
       <h1 style="text-align: center">Update Item</h1>
 
       <div class="containerForm">
-<!--           <label for="Store">Store:</label><br>
-          <select id="SelectVal" class="select-css" name="content">
-          {% for store in approvedStoreList %}
-            {% if store == storeVal %}
-                <option value="{{ store }}" selected> {{ store }} </option>
-              {% else %}
-                <option value="{{ store }}"> {{ store }} </option>
-              {% endif %}
-          {% endfor %}
-          </select>
-      <label for="Item">Item:</label><br>
-      <input type="text" name="item_info" id="item_info" value=""/><br> -->
+
       <label for="Quantity">Quantity:</label><br>
       <input type="text" name="quantity" id="quantity" value=""/><br>
 
@@ -216,9 +215,6 @@
 
   <script>
     $('#id01').on('show.bs.modal', function(e) {
-      // var itemInfo = $(e.relatedTarget).data('item-info');
-      // $(e.currentTarget).find('input[name="item_info"]').val(itemInfo);
-
       var desiredAmount = $(e.relatedTarget).data('task-qty');
       $(e.currentTarget).find('input[name="quantity"]').val(desiredAmount);
       
@@ -228,12 +224,37 @@
       var originalQ = $(e.relatedTarget).data('task-qty');
       document.getElementById("origQty").value=originalQ;
 
-      // var storeval = $(e.relatedTarget).data('store-val');
-      // document.getElementById("SelectVal").value=storeval;
-
     });
 
   </script>
+
+  <div id="id03" class="modal">
+    <form class="modal-content animate" action="/signup" method="POST">
+        <h1 style="text-align: center">Sign Up</h1>
+        <div class="containerForm">
+          <label for="acctType">Select Account Type:</label>
+            <select class="select-css" name="userType">
+                <option value="User">User</option>
+                <option value="Business">Business</option>
+            </select>
+            <input type="submit" value="Submit">
+        </div>
+    </form>
+  </div>
+
+  <div id="id04" class="modal">
+    <form class="modal-content animate" action="/generalSignIn" method="POST">
+        <h1 style="text-align: center">Sign In</h1>
+        <div class="containerForm">
+          <label for="acctType">Select Account Type:</label>
+            <select class="select-css" name="userType">
+                <option value="User">User</option>
+                <option value="Business">Business</option>
+            </select>
+            <input type="submit" value="Submit">
+        </div>
+    </form>
+  </div>
 
 </div> 
 {% endblock %}

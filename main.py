@@ -11,7 +11,7 @@ client = nexmo.Client(key='332168c1', secret='IYB7GNSXl8HNtEMc')
 app = Flask(__name__)
 app.secret_key = '#d\xe9X\x00\xbe~Uq\xebX\xae\x81\x1fs\t\xb4\x99\xa3\x87\xe6.\xd1_'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shoppingList.db' #change test.db name in the future
-app.config['SQLALCHEMY_BINDS'] = {'logins': 'sqlite:///logins.db', 'productDataBase': 'sqlite:///productDataBase.db'}
+app.config['SQLALCHEMY_BINDS'] = {'logins': 'sqlite:///logins.db', 'productDataBase': 'sqlite:///productDataBase.db', 'businessLogins': 'sqlite:///businessLogins.db'}
 db = SQLAlchemy(app)
 
 approvedStoreList = ["Walmart", "Target", "Kroger"]
@@ -25,6 +25,7 @@ class Todo(db.Model):
 	item = db.Column(db.String(200))
 	desiredAmount = db.Column(db.String(200))
 	pricePerUnit = db.Column(db.String(200))
+	isLive = db.Column(db.Boolean, unique=False, default=False)
 	date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
 	def __repr__(self):
@@ -39,6 +40,16 @@ class Logins(db.Model):
 	address = db.Column(db.String(200))
 	neighborhood = db.Column(db.String(200))
 	password = db.Column(db.String(200))
+
+class BusinessLogins(db.Model):
+	__bind_key__ = 'businessLogins'
+	id = db.Column(db.Integer, primary_key=True)
+	name = db.Column(db.String(200))
+	email = db.Column(db.String(200))
+	address = db.Column(db.String(200))
+	neighborhood = db.Column(db.String(200))
+	password = db.Column(db.String(200))
+
 
 class Products(db.Model):
 	__bind_key__ = 'productDataBase'
@@ -100,11 +111,11 @@ def addItems():
 
 	if request.method == 'GET':
 		tasks = Products.query.order_by(Products.prodStore).all()
-		if 'user' in session:
-			curr_user = session['user']
-			return render_template('addItem.html', tasks=tasks, signInStatus="Sign Out", signUpStatus = "", neigh=session['neighborhood'][0], userNameForFilter=session['user'], approvedStoreList=approvedStoreList)
+		if 'bStore' in session:
+			curr_user = session['bStore']
+			return render_template('addItem.html', tasks=tasks, signInStatus="Sign Out", signUpStatus = "", nameOfStore=session['bStore'], approvedStoreList=approvedStoreList)
 		else:
-			return render_template('addItem.html', tasks=tasks, signInStatus="Sign In", signUpStatus = "Sign Up", neigh=0, userNameForFilter='Anonymous', approvedStoreList=approvedStoreList)
+			return render_template('addItem.html', tasks=tasks, signInStatus="Sign In", signUpStatus = "Sign Up", nameOfStore='Anonymous', approvedStoreList=approvedStoreList)
 
 
 @app.route('/lookUpItem', methods=['POST', 'GET']) 
@@ -193,8 +204,6 @@ def updateProd():
 	except:
 		return 'There was an issue with your update'
 
-
-
 @app.route('/update', methods=["POST"])
 def update():
 	idVAL = int(request.form['taskID'])
@@ -219,6 +228,37 @@ def update():
 	# else:
 	# 	return render_template('update.html', tasks=task, approvedStoreList=approvedStoreList)
 
+@app.route('/copy/<int:idVAL>/<int:prodIDVAL>', methods=["POST", "GET"])
+def copy(idVAL,prodIDVAL):
+	task = Todo.query.get_or_404(idVAL)
+	if 'user' in session:
+		userVal = session['user']
+		neighborhoodVal = int(session['neighborhood'][0])
+	else:
+		userVal = 'Anonymous'
+		neighborhoodVal = 0
+
+	store_info=task.content
+	item_info=task.item
+	price_info=task.pricePerUnit
+	quantity_info=task.desiredAmount
+	new_entry = Todo(prodID=prodIDVAL, user=userVal, content=store_info, neighborhood=neighborhoodVal, item=item_info, desiredAmount=quantity_info, pricePerUnit=price_info)
+
+	task2 = Products.query.get_or_404(task.prodID)
+	task2.prodQuantity = task2.prodQuantity - int(quantity_info)
+	if task2.prodQuantity < 0:
+		return redirect('/')
+	try:
+		db.session.commit()
+	except Exception as e:
+		return str(e)	
+	try:
+		db.session.add(new_entry)
+		db.session.commit()
+	except Exception as e:
+		return str(e)
+
+	return redirect('/')
 
 #Sign In/ Sign Up Pipeline Code
 @app.route('/process_signup', methods=['POST', 'GET']) 
@@ -243,13 +283,58 @@ def process_signup():
 	else:
 		return "GET REQUEST TO PROCESS SIGNUP"
 
+@app.route('/process_business_signup', methods=['POST', 'GET']) 
+def process_business_signup():
+	if request.method == 'POST':	
+		name = request.form['name']
+		email_info = request.form['email']
+		addy = request.form['address']
+		neighborhood = request.form['neighborhood']
+		password_info = request.form['password']
+		repeat_pass = request.form['psw-repeat']
+		if not password_info == repeat_pass:
+			return "passwords don't match"
+		login_var = BusinessLogins(name=name, email=email_info, address=addy, neighborhood=neighborhood, password=password_info)
+		try:
+			db.session.add(login_var)
+			db.session.commit()
+		except Exception as e:
+			return str(e)
+		return redirect('/bussiness_signin')
+	else:
+		return render_template('createBusinessAccount.html')
 
 @app.route('/signup', methods=['POST', 'GET']) 
 def signup():
 	if request.method == 'POST':
-		return "POST COMMAND TO signup"
+		userType = request.form['userType']
+		if userType == "User":
+			return render_template('createAccount.html')
+		else:
+			return redirect('/process_business_signup')
 	else:
 		return render_template('createAccount.html')
+
+@app.route('/bussiness_signin', methods=['POST', 'GET']) 
+def business_signin():
+	if request.method == 'POST':
+		name = request.form['name']
+		password_info = request.form['psw']
+		related_password = db.session.query(BusinessLogins.password).filter_by(name=name).first()
+		if (not related_password == None) and password_info == related_password[0]:
+			session['bStore'] = name
+			return redirect('/addItems')
+		return render_template('bussiness_signin.html', errorMessage="Wrong Username or Password")
+	else:
+		return render_template('bussiness_signin.html')
+
+@app.route('/generalSignIn', methods=['POST']) 
+def generalsignin():
+	userType = request.form['userType']
+	if userType == "User":
+		return redirect('/signin')
+	else:
+		return redirect('/bussiness_signin')
 
 @app.route('/signin', methods=['POST', 'GET']) 
 def signin():
@@ -267,11 +352,23 @@ def signin():
 			related_neighborhood = db.session.query(Logins.neighborhood).filter_by(username=uname).first()
 			session['neighborhood'] = related_neighborhood
 			return redirect('/')
-		return render_template('signin.html', errorMessage="Wrong Password or Username")
+		return render_template('signin.html', errorMessage="Wrong Username or Password")
 	else:
 		return render_template('signin.html')
 
-@app.route('/signout', methods=['GET']) 
+@app.route('/goLive', methods=["POST"])
+def goLive():
+	if 'user' not in session:
+		return redirect('/signin')
+	curr_user = session['user']
+	todoProductsWithUser = db.session.query(Todo).filter_by(user=curr_user).all()
+	for task in todoProductsWithUser:
+		task.isLive = True
+		db.session.commit()
+		print(task.isLive)
+	return redirect('/')
+
+@app.route('/signout', methods=['GET'])  
 def sign_out():
 	if 'user' not in session:
 		return redirect('/')
@@ -280,11 +377,16 @@ def sign_out():
 	del session['neighborhood']
 	return redirect('/')
 
+@app.route('/signoutBusiness', methods=['GET']) 
+def sign_out_business():
+	if 'user' not in session:
+		return redirect('/')
+	del session['bStore']
+	return redirect('/')
 
 #Send Message to User
 @app.route('/sendMessage', methods=['POST', 'GET']) 
 def sendMessage():
-	print("bro")
 	if 'user' not in session:
 		return redirect('/signin')
 	curr_user = session['user']

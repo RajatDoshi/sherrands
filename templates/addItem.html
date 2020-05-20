@@ -5,6 +5,24 @@
 <script type="text/javascript" src='https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.3.min.js'></script>
 <script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js'></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+<!-- <script type="text/javascript">
+    function initFiltering() {
+      var curr_item = '{{nameOfStore}}'
+      $("#myTable tr").filter(function() {
+        var containsElm = ($(this).text().toLowerCase().indexOf(curr_item.toLowerCase()))
+        if (containsElm > -1){
+          $(this).toggle((9<10)) //this just always evaluates to True
+        }
+        else{
+          $(this).toggle((9>10)) //this just always evaluates to False
+        }
+      });
+    }
+    window.onload = initFiltering;
+</script> -->
+
+
 <title>Sherrands Inventory Management</title>
 {% endblock %}
 
@@ -12,11 +30,11 @@
 <div class = "content">
     <div class="signin">
         {% if signInStatus == "Sign Out"%}
-        <a href="/signout">{{signInStatus}}</a>
+        <a href="/signoutBusiness">{{signInStatus}}</a>
         {% else %}
-        <a href="/signin">{{signInStatus}}</a>
+        <a href="/bussiness_signin">{{signInStatus}}</a>
         {% endif %}
-        <a href="/signup">{{signUpStatus}}</a>
+        <a href="/process_business_signup">{{signUpStatus}}</a>
     </div>
 	<h1 style="text-align: center"> Sherrands Inventory Management</h1>
 	{% if tasks|length < 1 %}
@@ -43,22 +61,24 @@
             </thead>
             <tbody id="myTable">
             {% for task in tasks %}
+                {% if task.prodStore == nameOfStore %}
                 <tr>
-                    <td>{{ task.prodStore }}</td>
-                    <td>{{ task.prodName }}</td>
-                    <td>{{ task.prodPrice }}</td>
-                    <td>{{ task.prodSize }}</td>
-                    <td>{{ task.prodQuantity }}</td>
-                    <td>
-                        <a href="/deleteProd/{{task.id}}">
-                            <img border="0" alt="Delete" src="https://img.pngio.com/png-x-x-png-272_256.png" width="15" height="15">
+                      <td>{{ task.prodStore }}</td>
+                      <td>{{ task.prodName }}</td>
+                      <td>{{ task.prodPrice }}</td>
+                      <td>{{ task.prodSize }}</td>
+                      <td>{{ task.prodQuantity }}</td>
+                      <td>
+                          <a href="/deleteProd/{{task.id}}">
+                              <img border="0" alt="Delete" src="https://img.pngio.com/png-x-x-png-272_256.png" width="15" height="15">
+                          </a>
+                          <br>
+                        <a href="#id02" data-toggle="modal" data-id-val = {{task.id}} data-name-val = {{task.prodName}} data-price-val={{task.prodPrice}} data-size-val={{task.prodPrice}} data-qty-val={{task.prodQuantity}} data-store-val={{task.prodStore}}>
+                          <img border="0" alt="Update" src="https://cdn3.iconfinder.com/data/icons/simple-files-1/128/Update-512.png" width="17" height="17">
                         </a>
-                        <br>
-                      <a href="#id02" data-toggle="modal" data-id-val = {{task.id}} data-name-val = {{task.prodName}} data-price-val={{task.prodPrice}} data-size-val={{task.prodPrice}} data-qty-val={{task.prodQuantity}} data-store-val={{task.prodStore}}>
-                        <img border="0" alt="Update" src="https://cdn3.iconfinder.com/data/icons/simple-files-1/128/Update-512.png" width="17" height="17">
-                      </a>
-                    </td>
+                      </td>
                 </tr>
+                {% endif %}
             {% endfor %}
             </tbody>
         </table>
@@ -83,13 +103,13 @@
             <form class="modal-content animate" action="/addItems" method="POST">
                 <h1 style="text-align: center">Add Inventory Item</h1>
                 <div class="containerForm">
-                    <label for="Store">Store:</label><br>
+<!--                     <label for="Store">Store:</label><br>
                     <select class="select-css" name="store">
                         {% for store in approvedStoreList %}
                             <option value="{{ store }}">{{ store }}</option>
                         {% endfor %}
-                    </select>
-                    
+                    </select> -->
+                    <input type="hidden" name="store" id="store" value="{{nameOfStore}}"/>
                     <label for="Name">Product Name:</label><br>
                     <input type="text" id="name" name="name" required><br>
                     <label for="Price">Produce Price:</label><br>
@@ -156,9 +176,6 @@
           
           var idval = $(e.relatedTarget).data('id-val');
           document.getElementById("taskID").value=idval;
-
-          // var storeval = $(e.relatedTarget).data('store-val');
-          // document.getElementById("SelectVal").value=storeval;
 
         });
     </script>
