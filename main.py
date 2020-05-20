@@ -14,7 +14,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shoppingList.db' #change test
 app.config['SQLALCHEMY_BINDS'] = {'logins': 'sqlite:///logins.db', 'productDataBase': 'sqlite:///productDataBase.db', 'businessLogins': 'sqlite:///businessLogins.db'}
 db = SQLAlchemy(app)
 
-approvedStoreList = ["Walmart", "Target", "Kroger"]
+approvedStoreList = ["Any Store", "Walmart", "Target", "Kroger"]
 
 class Todo(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
@@ -60,36 +60,23 @@ class Products(db.Model):
 	prodSize = db.Column(db.String(200))
 	prodQuantity = db.Column(db.Integer, default=0)
 
-# Shopping List Main Code
-@app.route('/', methods=['POST', 'GET']) 
-def index(): 
-	if request.method == 'POST':
-		if 'user' in session:
-			curr_user = session['user']
-			neighborhoodVal = int(session['neighborhood'][0])
-		else:
-			curr_user = 'Anonymous'
-			neighborhoodVal = 00000
-		store_info = request.form['content']
-		item_info = request.form['item_info']
-		quantity_info = request.form['quantity']
-		price_info = 3.1
+@app.route('/', methods=['GET']) 
+def home():
+	tasks = Todo.query.order_by(Todo.date_created).all()
+	if 'user' in session:
+		return render_template('home.html', tasks=tasks, signInStatus="Sign Out", userType="user", neigh=session['neighborhood'][0], userNameForFilter=session['user'], approvedStoreList=approvedStoreList)
+	elif 'bStore' in session:
+		return render_template('home.html', tasks=tasks, signInStatus="Sign Out", userType="business")
+	return render_template('home.html', tasks=tasks, signInStatus="Sign In", signUpStatus = "Sign Up", neigh=0, userNameForFilter='Anonymous', approvedStoreList=approvedStoreList)
 
-		new_entry = Todo(user=curr_user, content=store_info, neighborhood=neighborhoodVal, item=item_info, desiredAmount=quantity_info, pricePerUnit=price_info)
-		try:
-			db.session.add(new_entry)
-			db.session.commit()
-			return redirect('/')
-		except Exception as e:
-			return str(e)
-
+@app.route('/groceryList', methods=['GET']) 
+def groceryList():
+	tasks = Todo.query.order_by(Todo.date_created).all()
+	if 'user' in session:
+		return render_template('index.html', tasks=tasks, signInStatus="Sign Out", userType="user", neigh=session['neighborhood'][0], userNameForFilter=session['user'], approvedStoreList=approvedStoreList)
 	else:
-		tasks = Todo.query.order_by(Todo.date_created).all()
-		if 'user' in session:
-			curr_user = session['user']
-			return render_template('index.html', tasks=tasks, signInStatus="Sign Out", signUpStatus = "", neigh=session['neighborhood'][0], userNameForFilter=session['user'], approvedStoreList=approvedStoreList)
-		else:
-			return render_template('index.html', tasks=tasks, signInStatus="Sign In", signUpStatus = "Sign Up", neigh=0, userNameForFilter='Anonymous', approvedStoreList=approvedStoreList)
+		return redirect('/signin')
+	# return render_template('index.html', tasks=tasks, signInStatus="Sign In", signUpStatus = "Sign Up", neigh=0, userNameForFilter='Anonymous', approvedStoreList=approvedStoreList)
 
 
 #Local Inventory Management Code
@@ -98,14 +85,20 @@ def addItems():
 	if request.method == 'POST':
 		prodStore = request.form['store']
 		prodName = request.form['name']
-		prodPrice = request.form['price']
+		try:
+			prodPrice = float(request.form['price'])
+		except:
+			return redirect('/addItems#inventory')
 		prodSize = request.form['size']
-		prodQuantity = request.form['quantity']
-		prod_var = Products(prodStore=prodStore, prodName=prodName, prodPrice=float(prodPrice), prodSize=prodSize, prodQuantity=int(prodQuantity))
+		try:
+			prodQuantity = int(request.form['quantity'])
+		except:
+			prodQuantity = 1
+		prod_var = Products(prodStore=prodStore, prodName=prodName, prodPrice=prodPrice, prodSize=prodSize, prodQuantity=prodQuantity)
 		try:
 			db.session.add(prod_var)
 			db.session.commit()
-			return redirect('/addItems')
+			return redirect('/addItems#inventory')
 		except Exception as e:
 			return str(e)
 
@@ -115,7 +108,8 @@ def addItems():
 			curr_user = session['bStore']
 			return render_template('addItem.html', tasks=tasks, signInStatus="Sign Out", signUpStatus = "", nameOfStore=session['bStore'], approvedStoreList=approvedStoreList)
 		else:
-			return render_template('addItem.html', tasks=tasks, signInStatus="Sign In", signUpStatus = "Sign Up", nameOfStore='Anonymous', approvedStoreList=approvedStoreList)
+			return redirect('/bussiness_signin')
+			# return render_template('addItem.html', tasks=tasks, signInStatus="Sign In", signUpStatus = "Sign Up", nameOfStore='Anonymous', approvedStoreList=approvedStoreList)
 
 
 @app.route('/lookUpItem', methods=['POST', 'GET']) 
@@ -123,7 +117,10 @@ def lookUpItem():
 	if request.method == 'POST':
 		tasks = Products.query.order_by(Products.prodStore).all()
 		searchStore = request.form['content']
-		qntyWanted = int(request.form['quantity'])
+		try:
+			qntyWanted = int(request.form['quantity'])
+		except:
+			qntyWanted = 1
 		initItem = request.form['item_info']
 		if 'user' in session:
 			curr_user = session['user']
@@ -149,7 +146,7 @@ def addToList(id, qnty):
 	try:
 		db.session.add(prod_var)
 		db.session.commit()
-		return redirect('/')
+		return redirect('/groceryList#groceryList')
 	except Exception as e:
 		return str(e)
 
@@ -162,7 +159,7 @@ def deleteProd(id):
 	try:
 		db.session.delete(prod)
 		db.session.commit()
-		return redirect('/addItems')
+		return redirect('/addItems#inventory')
 	except:
 		return "There was a problem in deleting that item"
 
@@ -181,11 +178,10 @@ def delete(id):
 	task2.prodQuantity = task2.prodQuantity + int(task.desiredAmount)
 	try:
 		db.session.commit()
-		return redirect('/')
 	except:
 		return 'There was an issue with your update'
 
-	return redirect('/')
+	return redirect('/groceryList#groceryList')
 
 
 #Update Product Inventory or Shopping List Code
@@ -195,12 +191,18 @@ def updateProd():
 	task = Products.query.get_or_404(idVAL)
 	# task.prodStore =  request.form['store']
 	task.prodName = request.form['name']
-	task.prodPrice = float(request.form['price'])
+	try:
+		task.prodPrice = float(request.form['price'])
+	except:
+		return redirect('/addItems#inventory')
 	task.prodSize = request.form['size']
-	task.prodQuantity = int(request.form['quantity'])
+	try:
+		task.prodQuantity = int(request.form['quantity'])
+	except:
+		task.prodQuantity = 1
 	try:
 		db.session.commit()
-		return redirect('/addItems')
+		return redirect('/addItems#inventory')
 	except:
 		return 'There was an issue with your update'
 
@@ -222,7 +224,7 @@ def update():
 	task2.prodQuantity = task2.prodQuantity + origQty - int(task.desiredAmount)
 	try:
 		db.session.commit()
-		return redirect('/')
+		return redirect('/groceryList#groceryList')
 	except:
 		return 'There was an issue with your update'
 	# else:
@@ -247,7 +249,7 @@ def copy(idVAL,prodIDVAL):
 	task2 = Products.query.get_or_404(task.prodID)
 	task2.prodQuantity = task2.prodQuantity - int(quantity_info)
 	if task2.prodQuantity < 0:
-		return redirect('/')
+		return redirect('/groceryList#groceryList')
 	try:
 		db.session.commit()
 	except Exception as e:
@@ -258,7 +260,7 @@ def copy(idVAL,prodIDVAL):
 	except Exception as e:
 		return str(e)
 
-	return redirect('/')
+	return redirect('/groceryList#groceryList')
 
 #Sign In/ Sign Up Pipeline Code
 @app.route('/process_signup', methods=['POST', 'GET']) 
@@ -351,7 +353,7 @@ def signin():
 			session['address'] = related_address
 			related_neighborhood = db.session.query(Logins.neighborhood).filter_by(username=uname).first()
 			session['neighborhood'] = related_neighborhood
-			return redirect('/')
+			return redirect('/groceryList')
 		return render_template('signin.html', errorMessage="Wrong Username or Password")
 	else:
 		return render_template('signin.html')
@@ -379,7 +381,7 @@ def sign_out():
 
 @app.route('/signoutBusiness', methods=['GET']) 
 def sign_out_business():
-	if 'user' not in session:
+	if 'bStore' not in session:
 		return redirect('/')
 	del session['bStore']
 	return redirect('/')

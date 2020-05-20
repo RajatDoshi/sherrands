@@ -1,0 +1,254 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+#homeHeader {
+	background-image: url("https://cdn.pixabay.com/photo/2019/05/14/22/05/container-4203677_1280.jpg");
+	height: 100vh;
+	opacity: 0.5;
+	background-size: cover;
+	background-position: center;
+}
+
+#aboutHeader {
+/*  background-image: url("https://cdn.pixabay.com/photo/2019/05/14/22/05/container-4203677_1280.jpg");*/
+  background-color: lightblue;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+}
+
+#aboutHeaderBusiness {
+  background-color: lightblue;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+}
+
+#groceryList {
+  background-color: white;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+
+}
+
+#inventoryList {
+  background-color: white;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+}
+
+#inventory {
+  background-color: white;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+
+}
+
+.main-nav {
+	float: right;
+	list-style: none;
+	margin-top: 30px;
+}
+
+.main-nav li {
+	display: inline-block;
+}
+
+.main-nav li a {
+	color: white;
+	text-decoration: none;
+	padding: 5px 20px;
+	font-family: sans-serif;
+}
+
+.main-nav li.active a {
+  border: 2px solid white;
+}
+
+.main-nav li a:hover {
+  border: 2px solid white;
+}
+
+.mainNav li.active a {
+	border: 2px solid white;
+}
+
+.mainNav li a:hover {
+	border: 2px solid white;
+}
+
+.mainNav {
+  float: right;
+  list-style: none;
+  margin-top: 30px;
+}
+
+.mainNav li {
+  display: inline-block;
+}
+
+.mainNav li a {
+  color: #336B6B;
+  text-decoration: none;
+  padding: 5px 20px;
+  font-family: sans-serif;
+}
+
+.mainNav li.active a {
+  border: 2px solid #336B6B;
+}
+
+.mainNav li a:hover {
+  border: 2px solid #336B6B;
+}
+
+body {
+	font-family: sans-serif;;
+}
+
+label {
+    cursor: default;
+}
+
+.row {
+	padding-right: 2%;
+}
+
+.title {
+	position: absolute;
+	width: 1200px;
+}
+
+.containerForm {
+  padding: 16px;
+}
+
+h1 {
+	color: white;
+	text-transform: uppercase;
+	font-size: 70px;
+	margin-top: 34%;
+	margin-left: 52%;
+		
+}
+
+h2 {
+	font-family: sans-serif;
+	font-size: 36px;
+  color: #336B6B;
+}
+
+h3 {
+  color: white;
+  text-transform: uppercase;
+  font-size: 60px;
+  text-align: center;
+}
+
+h4 {
+  text-align: center;
+  font-family: sans-serif;
+  font-size: 60px;
+  color: #336B6B;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  padding-top: 60px;
+}
+
+.select-css {
+  display: block;
+  font-size: 16px;
+  font-family: sans-serif;
+  padding: 12px 20px;
+  width: 30%;
+  max-width: 30%;
+  margin: 8px 0;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0px;
+  border: 1px solid #ddd;
+
+  background-color: white;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat, repeat;
+  background-position: right .7em top 50%, 0 0;
+  background-size: .65em auto, 25%;
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+  border: 1px solid #888;
+  width: 20%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button (x) */
+.close {
+  position: absolute;
+  right: 25px;
+  top: 0;
+  color: #000;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: red;
+  cursor: pointer;
+}
+
+input[type=button], input[type=submit], input[type=reset] {
+  background-color: lightblue;
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  text-decoration: none;
+  margin: 4px 4px;
+  cursor: pointer;
+}
+
+
+/* Add Zoom Animation */
+.animate {
+  -webkit-animation: animatezoom 0.6s;
+  animation: animatezoom 0.6s
+}
+
+@-webkit-keyframes animatezoom {
+  from {-webkit-transform: scale(0)} 
+  to {-webkit-transform: scale(1)}
+}
+  
+@keyframes animatezoom {
+  from {transform: scale(0)} 
+  to {transform: scale(1)}
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+  span.psw {
+     display: block;
+     float: none;
+  }
+  .cancelbtn {
+     width: 100%;
+  }
+}

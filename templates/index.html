@@ -1,260 +1,315 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
 
-{% block head %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script type="text/javascript" src='https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.3.min.js'></script>
-<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js'></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
-<title>Sherrands</title>
-{% endblock %}
+<html lang="en">
+  <head>
+    <title>Sherrands</title>
+    <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type="text/javascript" src='https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.3.min.js'></script>
+    <script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js'></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 
-{% block body %}
-<div class = "content">
-    <div class="signin">
-        {% if signInStatus == "Sign Out"%}
-        <a href="/signout">{{signInStatus}}</a>
-        {% else %}
-        <a href="#id04" data-toggle="modal">{{signInStatus}}</a>
-        <a href="#id03" data-toggle="modal">{{signUpStatus}}</a>
-        {% endif %}
+  </head>
+  <body>
+    <header id="homeHeader">
+      <div class="row">
+        <ul class="main-nav">
+          <li class="active"><a href="/groceryList"> Home </a></li>
+          <li><a href="#aboutHeader"> About </a></li>
+          {% if userType != "business" %}
+            <li><a href="#groceryList"> Grocery List </a></li>
+          {% endif %}
+          {% if signInStatus == "Sign Out"%}
+            {% if userType == "user" %}
+              <li><a href="/signout"> {{signInStatus}} </a></li>
+            {% else %}
+              <li><a href="/addItems#inventory"> Inventory List </a></li>
+              <li><a href="/signoutBusiness"> {{signInStatus}} </a></li>
+            {% endif %}
+          
+          {% else %}
+            <li><a href="#id04" data-toggle="modal"> {{signInStatus}} </a></li>
+            <li><a href="#id03" data-toggle="modal"> {{signUpStatus}} </a></li>
+          {% endif %}
 
-    </div>
-	<h1 style="text-align: center"> Sherrands </h1>
-	{% if tasks|length < 1 %}
-    <h4 style="text-align: center">There are no items on your list. Create one below!</h4>
-    {% else %}
-    <div class="search-box">
-      <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search Shopping List">
-      <i class="fas fa-search"></i><br><br>
-    </div>
-    
-    <button class="button" type="button" onclick="onlyShowMine();return false;">My Personal List</button>
-    <button class="button" type="button" onclick="onlyShowNeighborhood();return false;">Neighborhood List</button>
-    <button class="button" type="button" onclick="resetFilter();return false;">Rest List</button>
-    
-    <br>
-    <br>
-    
-    <div style="overflow-x:auto;">
-        <table>
-            <thead>
-
-            <tr>
-                <th>Neighbor Username</th>
-                <th>Neighborhood </th>
-                <th>Store</th>
-                <th>Items</th>
-                <th>Quantity </th>
-                <th>Price</th>
-<!--                 <th>Actions</th> -->
-            </tr>
-            </thead>
-            <tbody id="myTable">
-            {% for task in tasks %}
-                <tr>
-                    <td>{{ task.user }}</td>
-                    <td>{{ task.neighborhood }}</td>
-                    <td>{{ task.content }}</td>
-                    <td>{{ task.item }}</td>
-                    <td>{{ task.desiredAmount }}</td>
-                    <td>{{ task.pricePerUnit }}</td>
-                    <td>
-                      {% if task.user == userNameForFilter %}
-                      <a href="/delete/{{task.id}}">
-                          <img border="0" alt="Delete" src="https://img.pngio.com/png-x-x-png-272_256.png" width="15" height="15">
-                      </a>
-                        <br>
-                      <a href="#id01" data-toggle="modal" data-ID-val = {{task.id}} data-store-val = {{task.content}} data-task-qty={{task.desiredAmount}} data-item-info={{task.item}}>
-                        <img border="0" alt="Update" src="https://cdn3.iconfinder.com/data/icons/simple-files-1/128/Update-512.png" width="17" height="17">
-
-                      </a>
-                      {% else %}
-                      <br>
-                      <a href="/copy/{{task.id}}/{{task.prodID}}">
-                        <img border="0" alt="Copy" src="https://i.stack.imgur.com/lkbBY.png" width="20" height="20">
-                      </a><br>
-                      {% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-          <script>
-          $(document).ready(function(){
-            $("#myInput").on("keyup", function() {
-              var value = $(this).val().toLowerCase();
-              $("#myTable tr").filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-              });
-            });
-          });
-          </script>
-
-    </div>
-
-    {% endif %}
-    <button type="button" class="btn-prim" data-toggle="modal" data-target="#id02">
-      Add Item
-    </button>
-
-    <button type="submit" class="goLiveButtonClass" goLiveFunc>
-      Go Live
-    </button>
-
-    <div id="id02" class="modal">
-      <form class="modal-content animate" action="/lookUpItem" method="POST">
-          <h1 style="text-align: center">Add Item</h1>
-          <div class="containerForm">
-            <label for="Store">Store:</label><br>
-            <select class="select-css" name="content">
-            {% for store in approvedStoreList %}
-                <option value="{{ store }}">{{ store }}</option>
-            {% endfor %}
-            </select>
-            <label for="Item">Item:</label><br>
-            <input type="text" id="item_info" name="item_info"><br>
-            <label for="Quantity">Quantity:</label><br>
-            <input type="text" id="quantity" name="quantity"><br>
-    	      <input type="submit" value="Submit"><br>
-    		  </form>
-  	     </div>
-       </div>
-     </div>
-
-    <script type="text/javascript">
-      $('#id02').on('show.bs.modal', function(e) {
-      });
-    </script>
-
-    <br>
-
-    <div class="outputForm" method="post" onsubmit="myGoingToFilter();return false;">
-        <form id="outputForm">
-          <label for="gotostore">GOING TO:</label>
-          <input type="text" placeholder="Type Name of Store" id="store" name="store" >
-          <input type="submit" value="Submit">
-        </form> 
-    </div>
-    <br>
-
-    <script type="text/javascript">      
-      function myGoingToFilter() {
-          var neighborhood = '{{neigh}}'
-          var val = document.getElementById("store").value
-          var value = val.toLowerCase();
-          $("#myTable tr").filter(function() {
-            var containsNeighborhood = ($(this).text().toLowerCase().indexOf(neighborhood))
-            if (containsNeighborhood > -1){
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-            }
-            else{
-              $(this).toggle((9>10)) //this just always evaluates to False
-            }
-          });
-          console.log(value)
-          $.post( "/sendMessage", {
-            javascript_data: val
-          });
-
-        }
-
-          function onlyShowMine() {
-          var curr_user = '{{userNameForFilter}}'
-          // console.log("user: " + curr_user)
-          $("#myTable tr").filter(function() {
-            var containsUser = ($(this).text().toLowerCase().indexOf(curr_user.toLowerCase()))
-            console.log($(this).text().toLowerCase())
-            if (containsUser > -1){
-              $(this).toggle((9<10)) //this just always evaluates to True
-            }
-            else{
-              $(this).toggle((9>10)) //this just always evaluates to False
-            }
-          });
-        }
-
-          function onlyShowNeighborhood() {
-          var neighborhood = '{{neigh}}'
-          // console.log(neighborhood)
-          $("#myTable tr").filter(function() {
-            var containsNeighborhood = ($(this).text().indexOf(neighborhood))
-            if (containsNeighborhood > -1){
-              $(this).toggle((9<10)) //this just always evaluates to True
-            }
-            else{
-              $(this).toggle((9>10)) //this just always evaluates to False
-            }
-          });
-        }
-
-          function resetFilter() {
-          $("#myTable tr").filter(function() {
-            $(this).toggle((9<10))
-          });
-        }
-
-    </script>
-
-  <div id="id01" class="modal">
-    <form class="modal-content animate" action="/update" method="POST">
-      <h1 style="text-align: center">Update Item</h1>
-
-      <div class="containerForm">
-
-      <label for="Quantity">Quantity:</label><br>
-      <input type="text" name="quantity" id="quantity" value=""/><br>
-
-      <input type="hidden" name="taskID" id="taskID" value="2"/>
-      <input type="hidden" name="origQty" id="origQty" value="5"/>
-
-      <input type="submit" value="Update">
+        </ul>
       </div>
 
-    </form>
-  </div>
+      <div class="title">
+        <h1> Sherrands </h1>
+      </div>
+    </header>
 
-  <script>
-    $('#id01').on('show.bs.modal', function(e) {
-      var desiredAmount = $(e.relatedTarget).data('task-qty');
-      $(e.currentTarget).find('input[name="quantity"]').val(desiredAmount);
-      
-      var idval = $(e.relatedTarget).data('id-val');
-      document.getElementById("taskID").value=idval;
 
-      var originalQ = $(e.relatedTarget).data('task-qty');
-      document.getElementById("origQty").value=originalQ;
-
-    });
-
-  </script>
-
-  <div id="id03" class="modal">
-    <form class="modal-content animate" action="/signup" method="POST">
-        <h1 style="text-align: center">Sign Up</h1>
-        <div class="containerForm">
-          <label for="acctType">Select Account Type:</label>
-            <select class="select-css" name="userType">
-                <option value="User">User</option>
-                <option value="Business">Business</option>
-            </select>
-            <input type="submit" value="Submit">
+    <header id="aboutHeader">
+      <br><h3> About Page </h3><br>
+      <div class="rowPhoto">
+        <div class="columnPhoto">
+          <h4> Step 1 </h4><br>
+          <img src="https://2rdnmg1qbg403gumla1v9i2h-wpengine.netdna-ssl.com/wp-content/uploads/sites/3/2019/06/handWristPain-939030682-770x553-650x428.jpg" alt="First" style="width:100%" height="500">
         </div>
-    </form>
-  </div>
-
-  <div id="id04" class="modal">
-    <form class="modal-content animate" action="/generalSignIn" method="POST">
-        <h1 style="text-align: center">Sign In</h1>
-        <div class="containerForm">
-          <label for="acctType">Select Account Type:</label>
-            <select class="select-css" name="userType">
-                <option value="User">User</option>
-                <option value="Business">Business</option>
-            </select>
-            <input type="submit" value="Submit">
+        <div class="columnPhoto">
+          <h4> Step 2 </h4><br>
+          <img src="https://www.vmcdn.ca/f/files/mountainviewtoday/import/9/2018/02/GG-20170411-OLD0801-304119959-AR.jpeg" alt="Second" style="width:100%" height="500">
         </div>
-    </form>
-  </div>
+        <div class="columnPhoto">
+          <h4> Step 3 </h4><br>
+          <img src="https://www.pymnts.com/wp-content/uploads/2020/02/Evolv-Ventures-Grocery-Delivery-eCommerce-Fulfillment.jpg" alt="Third" style="width:100%" height="500">
+        </div>
+      </div>
+      <br>
+      <span class="b"> Input Your Grocery List into our System</span> 
+      <span class="b"> Neighbor Collects your Groceries at Local Stores </span>
+      <span class="b"> Recieve Your Groceries at Your Door Step </span>
 
-</div> 
-{% endblock %}
+    </header>
+
+
+
+    <header id="groceryList">
+
+    <div class = "content">
+    <br><h4 style="text-align: center"> Your Grocery List </h4>
+    <br>
+      {% if tasks|length < 1 %}
+        <h4 style="text-align: center">There are no items on your list. Create one below!</h4>
+        {% else %}
+        <div class="search-box">
+          <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search Shopping List">
+<!--          <i class="fas fa-search"></i><br><br>
+ -->        </div>
+        
+        <button class="button" type="button" onclick="onlyShowMine();return false;">My Personal List</button>
+        <button class="button" type="button" onclick="onlyShowNeighborhood();return false;">Neighborhood List</button>
+        <button class="button" type="button" onclick="resetFilter();return false;">Rest List</button>
+        
+        <br>
+        <br>
+        
+        <div class="pane" style="overflow-x:auto;">
+            <table>
+                <thead>
+
+                <tr>
+                    <th>Neighbor Username</th>
+                    <th>Neighborhood </th>
+                    <th>Store</th>
+                    <th>Items</th>
+                    <th>Quantity </th>
+                    <th>Price</th>
+                </tr>
+                </thead>
+                <tbody id="myTable">
+                {% for task in tasks %}
+                    <tr>
+                        <td>{{ task.user }}</td>
+                        <td>{{ task.neighborhood }}</td>
+                        <td>{{ task.content }}</td>
+                        <td>{{ task.item }}</td>
+                        <td>{{ task.desiredAmount }}</td>
+                        <td>{{ task.pricePerUnit }}</td>
+                        <td>
+                          {% if task.user == userNameForFilter %}
+                          <a href="/delete/{{task.id}}">
+                              <img border="0" alt="Delete" src="https://img.pngio.com/png-x-x-png-272_256.png" width="15" height="15">
+                          </a>
+                            <br>
+                          <a href="#id01" data-toggle="modal" data-ID-val = {{task.id}} data-store-val = {{task.content}} data-task-qty={{task.desiredAmount}} data-item-info={{task.item}}>
+                            <img border="0" alt="Update" src="https://cdn3.iconfinder.com/data/icons/simple-files-1/128/Update-512.png" width="17" height="17">
+
+                          </a>
+                          {% else %}
+                          <br>
+                          <a href="/copy/{{task.id}}/{{task.prodID}}">
+                            <img border="0" alt="Copy" src="https://i.stack.imgur.com/lkbBY.png" width="20" height="20">
+                          </a><br>
+                          {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+              <script>
+              $(document).ready(function(){
+                $("#myInput").on("keyup", function() {
+                  var value = $(this).val().toLowerCase();
+                  $("#myTable tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                  });
+                });
+              });
+              </script>
+
+        </div>
+
+        {% endif %}
+        <br>
+        <button type="button" class="btn-prim" data-toggle="modal" data-target="#id02">
+          Add Item
+        </button>
+
+<!--        <button type="submit" class="goLiveButtonClass" goLiveFunc>
+          Go Live
+        </button> -->
+
+        <div id="id02" class="modal">
+          <form class="modal-content animate" action="/lookUpItem" method="POST">
+              <h2 style="text-align: center">Add Item</h2>
+              <div class="containerForm">
+                <label for="Store">Store:</label><br>
+                <select class="select-css" name="content">
+                {% for store in approvedStoreList %}
+                    <option value="{{ store }}">{{ store }}</option>
+                {% endfor %}
+                </select>
+                <label for="Item">Item:</label><br>
+                <input type="text" id="item_info" name="item_info"><br>
+                <label for="Quantity">Quantity:</label><br>
+                <input type="text" id="quantity" name="quantity"><br>
+                <input type="submit" value="Submit"><br>
+              </form>
+             </div>
+           </div>
+         </div>
+
+        <script type="text/javascript">
+          $('#id02').on('show.bs.modal', function(e) {
+          });
+        </script>
+
+        <br>
+
+        <div class="outputForm" method="post" onsubmit="myGoingToFilter();return false;">
+            <form id="outputForm">
+              <label for="gotostore">GOING TO:</label>
+              <input type="text" placeholder="Type Name of Store" id="store" name="store" >
+              <input type="submit" value="Submit">
+            </form> 
+        </div>
+        <br>
+
+        <script type="text/javascript">      
+          function myGoingToFilter() {
+              var neighborhood = '{{neigh}}'
+              var val = document.getElementById("store").value
+              var value = val.toLowerCase();
+              $("#myTable tr").filter(function() {
+                var containsNeighborhood = ($(this).text().toLowerCase().indexOf(neighborhood))
+                if (containsNeighborhood > -1){
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                }
+                else{
+                  $(this).toggle((9>10)) //this just always evaluates to False
+                }
+              });
+              console.log(value)
+              $.post( "/sendMessage", {
+                javascript_data: val
+              });
+
+            }
+
+              function onlyShowMine() {
+              var curr_user = '{{userNameForFilter}}'
+              // console.log("user: " + curr_user)
+              $("#myTable tr").filter(function() {
+                var containsUser = ($(this).text().toLowerCase().indexOf(curr_user.toLowerCase()))
+                console.log($(this).text().toLowerCase())
+                if (containsUser > -1){
+                  $(this).toggle((9<10)) //this just always evaluates to True
+                }
+                else{
+                  $(this).toggle((9>10)) //this just always evaluates to False
+                }
+              });
+            }
+
+              function onlyShowNeighborhood() {
+              var neighborhood = '{{neigh}}'
+              // console.log(neighborhood)
+              $("#myTable tr").filter(function() {
+                var containsNeighborhood = ($(this).text().indexOf(neighborhood))
+                if (containsNeighborhood > -1){
+                  $(this).toggle((9<10)) //this just always evaluates to True
+                }
+                else{
+                  $(this).toggle((9>10)) //this just always evaluates to False
+                }
+              });
+            }
+
+              function resetFilter() {
+              $("#myTable tr").filter(function() {
+                $(this).toggle((9<10))
+              });
+            }
+
+        </script>
+
+      <div id="id01" class="modal">
+        <form class="modal-content animate" action="/update" method="POST">
+          <h2 style="text-align: center">Update Item</h2>
+
+          <div class="containerForm">
+
+          <label for="Quantity">Quantity:</label><br>
+          <input type="text" name="quantity" id="quantity" value=""/><br>
+
+          <input type="hidden" name="taskID" id="taskID" value="2"/>
+          <input type="hidden" name="origQty" id="origQty" value="5"/>
+
+          <input type="submit" value="Update">
+          </div>
+
+        </form>
+      </div>
+
+      <script>
+        $('#id01').on('show.bs.modal', function(e) {
+          var desiredAmount = $(e.relatedTarget).data('task-qty');
+          $(e.currentTarget).find('input[name="quantity"]').val(desiredAmount);
+          
+          var idval = $(e.relatedTarget).data('id-val');
+          document.getElementById("taskID").value=idval;
+
+          var originalQ = $(e.relatedTarget).data('task-qty');
+          document.getElementById("origQty").value=originalQ;
+
+        });
+
+      </script>
+    </header>
+
+    <div id="id03" class="modal">
+      <form class="modal-content animate" action="/signup" method="POST">
+          <h2 style="text-align: center">Sign Up</h2><br>
+          <div class="containerForm">
+            <label for="acctType">Select Account Type:</label>
+              <select class="select-css" name="userType">
+                  <option value="User">User</option>
+                  <option value="Business">Business</option>
+              </select>
+              <input type="submit" value="Submit">
+          </div>
+      </form>
+    </div>
+
+    <div id="id04" class="modal">
+      <form class="modal-content animate" action="/generalSignIn" method="POST">
+          <h2 style="text-align: center">Sign In</h1><br>
+          <div class="containerForm">
+            <label for="acctType">Select Account Type:</label>
+              <select class="select-css" name="userType">
+                  <option value="User">User</option>
+                  <option value="Business">Business</option>
+              </select>
+              <input type="submit" value="Submit">
+          </div>
+      </form>
+    </div>
+  </body>
+</html>

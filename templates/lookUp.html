@@ -51,12 +51,11 @@
                 <th>Product Price</th>
                 <th>Product Size</th>
                 <th>Quantity Left</th>
-      <!--           <th>Actions</th> -->
             </tr>
             </thead>
             <tbody id="myTable">
             {% for task in tasks %}
-                {% if task.prodStore == searchStore %}
+                {% if task.prodStore == searchStore or searchStore == "Any Store" %}
                     <tr>
                         <td>{{ task.prodName }}</td>
                         <td>{{ task.prodPrice }}</td>
@@ -73,8 +72,7 @@
                               <img border="0" alt="Add To List" src="https://cdn1.iconfinder.com/data/icons/basic-ui-elements-28/512/1034_Add_new_plus_sign-512.png" width="17" height="17">
                             </a>
                         </td>
-                        {% endif %}
-
+                  {% endif %}
                     </tr>
                 {% endif %}
             {% endfor %}
