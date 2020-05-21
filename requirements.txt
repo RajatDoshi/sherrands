@@ -28,7 +28,6 @@ MyApplication==0.1.0
 nexmo==2.4.0
 nltk==3.4.5
 numexpr==2.7.0
-numpy==1.17.3
 opencv-python-headless==4.2.0.32
 pandas==0.25.2
 passlib==1.7.1
