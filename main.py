@@ -10,10 +10,18 @@ client = nexmo.Client(key='332168c1', secret='IYB7GNSXl8HNtEMc')
 
 app = Flask(__name__)
 app.secret_key = '#d\xe9X\x00\xbe~Uq\xebX\xae\x81\x1fs\t\xb4\x99\xa3\x87\xe6.\xd1_'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shoppingList.db' #change test.db name in the future
-app.config['SQLALCHEMY_BINDS'] = {'logins': 'sqlite:///logins.db', 'productDataBase': 'sqlite:///productDataBase.db', 'businessLogins': 'sqlite:///businessLogins.db'}
-db = SQLAlchemy(app)
 
+ENV='PROD'
+
+if ENV =='DEV':
+	app.debug = True
+	app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shoppingList.db'
+	app.config['SQLALCHEMY_BINDS'] = {'logins': 'sqlite:///logins.db', 'productDataBase': 'sqlite:///productDataBase.db', 'businessLogins': 'sqlite:///businessLogins.db'}
+else:
+	app.debug = False
+	app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://yxrfydiztahwch:918a959708c6a091c8e4f78052043421e6f077d4c5cc446b268a2b650a7161e2@ec2-52-71-55-81.compute-1.amazonaws.com:5432/dfertt2bvbj49j' 
+	app.config['SQLALCHEMY_BINDS'] = {'logins': 'sqlite:///logins.db', 'productDataBase': 'sqlite:///productDataBase.db', 'businessLogins': 'sqlite:///businessLogins.db'}	
+db = SQLAlchemy(app)
 approvedStoreList = ["Any Store", "Walmart", "Target", "Kroger"]
 
 class Todo(db.Model):
@@ -413,4 +421,4 @@ def sendMessage():
 
 # main driver function 
 if __name__ == '__main__':   
-	app.run(debug=True) 
+	app.run() 
