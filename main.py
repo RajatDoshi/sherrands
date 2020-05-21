@@ -11,7 +11,7 @@ client = nexmo.Client(key='332168c1', secret='IYB7GNSXl8HNtEMc')
 app = Flask(__name__)
 app.secret_key = '#d\xe9X\x00\xbe~Uq\xebX\xae\x81\x1fs\t\xb4\x99\xa3\x87\xe6.\xd1_'
 
-ENV='PROD'
+ENV='DEV'
 
 if ENV =='DEV':
 	app.debug = True
