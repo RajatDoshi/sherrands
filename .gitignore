@@ -14,8 +14,6 @@ img/img_avatar.png
 
 *.jpg
 
-*.png
-
 package-lock.json
 
 package.json
