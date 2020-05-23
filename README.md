@@ -1,13 +1,16 @@
 # Sherrands
 
+## Homescreen
+![](screenshots/homeScreen.png)
+
 ## Product Inventory Input Page
-![](screenshots/users.png)
+![](screenshots/inventoryList.png)
 
 ## Consumer Grocery List Page
-![](screenshots/users.png)
+![](screenshots/groceryList.png)
 
-## Product Inventory Search Page
-![](screenshots/users.png)
+## Inventory Search Page
+![](screenshots/productLookUp.png)
 
 Run server locally:
 ```
