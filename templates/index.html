@@ -152,9 +152,49 @@
           Add Item
         </button>
 
-<!--        <button type="submit" class="goLiveButtonClass" goLiveFunc>
-          Go Live
-        </button> -->
+        
+        <button type="button" class="btn-prim" data-toggle="modal" data-target="#id06" goLive>
+          Confirm your List
+        </button>
+
+        <button type="button" class="btn-prim" data-toggle="modal" data-target="#id05">
+          Make a Trip
+        </button>
+    
+      <!-- PAYING FOR GROCERY LIST -->
+      <div id="id06" class="modal">
+      <form class="modal-content animate" action="{{ url_for('pay') }}" method="POST">
+        <h2 style="text-align: center">Confirm your grocery list order below</h2>
+        <script 
+          src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+          data-key="{{ pubkey }}"
+          data-amount="1999"
+          data-name="Checkout"
+          data-description="Widget"
+          data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+          data-locale="auto">
+        </script>
+      </form>
+      </div>
+
+
+      <!-- BUTTON FOR DRIVER TO CLAIM A TRIP -->
+      <div id="id05" class="modal"> 
+      <form class="modal-content animate" action = "/makeTrip" method="POST">
+          <h2 style="text-align: center">Make a Trip</h1>
+          <div class="containerForm">
+            <label for="Store">Store:</label><br>
+            <select class="select-css" name="content">
+            {% for store in approvedStoreList %}
+              {% if store != "Any Store" %}
+                <option value="{{ store }}">{{ store }}</option>
+              {% endif %}
+            {% endfor %}
+            </select>
+            <input type="submit" value="Submit"><br>
+          </div>
+        </form>
+      </div>
 
         <div id="id02" class="modal">
           <form class="modal-content animate" action="/lookUpItem" method="POST">
