@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class = "content">
+	<h1 style="text-align: center"> <i>Sorry, the trip to </i><b>{{ store }}</b><i> for </i><b>{{ neighborhood }}</b><i> is already being made.</i></h1>
+  </div> 
+  <div class="cancel_button" style="background-color:white">
+  <button onclick="location.href = '/';" id="cancel_button" class="cancel_button">Go Back</button>
+  </div>
+
+{% endblock %}

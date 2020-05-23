@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript" src='https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.3.min.js'></script>
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js'></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<title>Sherrands</title>
+{% endblock %}
+
+{% block body %}
+<div class = "content">
+	<h1 style="text-align: center"> Once you have picked up all items, click below.</h1>
+<div class="cancel_button" style="background-color:white">
+  <button style="text-align: center" type="button" class="btn-prim" data-toggle="modal" data-target="#confirm">Checkout</button>
+  </div>
+  <div id="confirm" class="modal">
+    <!-- <form class="modal-content animate" action="{{ url_for('pay') }}" method="POST">
+        <h1 style="text-align: center">Will place stripe button below</h1>
+        <script 
+          src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+          data-key="{{ pubkey }}"
+          data-amount="1999"
+          data-name="Checkout"
+          data-description="Widget"
+          data-image="https://stripe.com/img/documentation/checkout/marketplace.png"
+          data-locale="auto">
+        </script>
+    </form> -->
+    <!-- Update the lists -->
+
+    <h2 style="text-align: center">Thank you so much!</h2>
+    <button onclick="location.href = '/';" id="cancel_button" class="cancel_button">Go Back</button>
+  </div>
+</div>
+
+
+{% endblock %}

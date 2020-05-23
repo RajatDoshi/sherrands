@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript" src='https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.3.min.js'></script>
+<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/js/bootstrap.min.js'></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<title>Sherrands</title>
+{% endblock %}
+
+{% block body %}
+<div class = "content">
+	<h1 style="text-align: center"> <i>Are you sure you want to make the trip to </i><b>{{ store }}</b><i> for </i><b>{{ neighborhood }}</b>?</h1>
+  <button type="button" class="btn-prim" data-toggle="modal" data-target="#confirm">
+  Yes
+	</button>
+  <div id="confirm" class="modal">
+    <form class="modal-content animate" action="/checkOut" method="POST">
+        <h1 style="text-align: center">Click below to finalize this trip</h1>
+        <div class="containerForm">
+        	<label for="Store">Store:</label><br>
+            <select class="select-css" name="content">
+            {% for newstore in approvedStoreList %}
+                <option value="{{ newstore }}">{{ newstore }}</option>
+            {% endfor %}
+            </select>
+          	<input type="submit" value="Confirm">
+          </div>
+      </form>
+  </div>
+  <div class="cancel_button" style="background-color:white">
+  <button onclick="location.href = '/';" id="cancel_button" class="cancel_button">Go Back</button>
+  </div>
+</div> 
+  
+
+
+{% endblock %}
