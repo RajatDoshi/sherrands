@@ -5,11 +5,16 @@ from flask import Flask, render_template, url_for, request, redirect, flash, ses
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import nexmo
+import stripe
 
 client = nexmo.Client(key='332168c1', secret='IYB7GNSXl8HNtEMc')
 
 app = Flask(__name__)
 app.secret_key = '#d\xe9X\x00\xbe~Uq\xebX\xae\x81\x1fs\t\xb4\x99\xa3\x87\xe6.\xd1_'
+
+stripe_pubkey = 'pk_test_CE8nMK2uLGoqKKytuATwYtsL00i6BheH2R'
+stripe_secret = 'sk_test_7cXNsOpzonINjFFbtYZWI3Hy00yPATKKPb'
+stripe.api_key = stripe_secret
 
 ENV='PROD'
 
@@ -81,7 +86,7 @@ def home():
 def groceryList():
 	tasks = Todo.query.order_by(Todo.date_created).all()
 	if 'user' in session:
-		return render_template('index.html', tasks=tasks, signInStatus="Sign Out", userType="user", neigh=session['neighborhood'][0], userNameForFilter=session['user'], approvedStoreList=approvedStoreList)
+		return render_template('index.html', tasks=tasks, signInStatus="Sign Out", userType="user", neigh=session['neighborhood'][0], userNameForFilter=session['user'], approvedStoreList=approvedStoreList, pubkey = stripe_pubkey)
 	else:
 		return redirect('/signin')
 	# return render_template('index.html', tasks=tasks, signInStatus="Sign In", signUpStatus = "Sign Up", neigh=0, userNameForFilter='Anonymous', approvedStoreList=approvedStoreList)
@@ -376,6 +381,50 @@ def goLive():
 		task.isLive = True
 		db.session.commit()
 		print(task.isLive)
+	return redirect('/')
+
+# Have to send customer payments as well as driver payment - should we add customer in-app balance?
+@app.route('/makeTrip', methods=['POST', 'GET'])
+def makeTrip():
+	if request.method == 'POST':
+		if 'user' not in session:
+			return redirect('/signin')
+		# curr_user = session['user']
+		curr_store = request.form['content']
+		curr_neighborhood = session['neighborhood'][0]
+		# return render_template('tripClaimed.html', store=curr_store, neighborhood=curr_neighborhood)
+		todoProductsWithUser = db.session.query(Todo).filter_by(content=curr_store, neighborhood=curr_neighborhood).all()
+		tripClaimed = False
+		countProds = 0
+		for task in todoProductsWithUser:
+			if (task.isLive):
+				tripClaimed = True
+			task.isLive = True
+			db.session.commit()
+			print(task.isLive)
+			countProds = countProds + 1
+		if (countProds == 0):
+			return redirect('/')
+		if (tripClaimed):
+			return render_template('tripClaimed.html', store=curr_store, neighborhood=curr_neighborhood)
+		else:
+			return render_template('confirmTrip.html', approvedStoreList = approvedStoreList, store=curr_store, neighborhood=curr_neighborhood)
+	else:
+		return "GET REQ"
+
+@app.route('/checkOut', methods=['POST', 'GET'])
+def checkOut():
+	if (request.method == 'POST'):
+		curr_store = request.form['content']
+		curr_neighborhood = session['neighborhood'][0]
+		return render_template('checkOut.html', store = curr_store, neighborhood = curr_neighborhood, pubkey = stripe_pubkey)
+	else:
+		return "GET REQ"
+
+@app.route('/pay', methods=['POST'])
+def pay():
+	# print("payed")
+	# Fill in updating customer info here
 	return redirect('/')
 
 @app.route('/signout', methods=['GET'])  
